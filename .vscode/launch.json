@@ -1,0 +1,55 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Bench",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "cargo",
+            "args": [
+                "bench"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "Build",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "cargo",
+            "args": [
+                "build"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "Check",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "cargo",
+            "args": [
+                "check"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "Run (Debug)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/redox_boy.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": true
+        }
+    ]
+}
