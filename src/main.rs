@@ -17,11 +17,102 @@ const BIOS_ROM: [u8; 256] = [
 0x21,0x04, 0x01,0x11, 0xa8,0x00, 0x1a,0x13, 0xbe,0x20, 0xfe,0x23, 0x7d,0xfe, 0x34,0x20,
 0xf5,0x06, 0x19,0x78, 0x86,0x23, 0x05,0x20, 0xfb,0x86, 0x20,0xfe, 0x3e,0x01, 0xe0,0x50];
 
-fn main()
+fn PCReadByte(PC: &mut u16, memory: &[u8; 65536], cycles: &mut u32) -> u8
 {
-    println!{"Pretend we're booting a game boy rn {}", BIOS_ROM[0]};
-    //loop
-    {
+    let byte = memory[*PC as usize];
+    (*PC) += 1;
+    (*cycles) += 4;
+    return byte;
+}
 
+fn main()
+{    
+    //CPU
+    //registers
+    let mut A: u8 = 0; //accumulator
+    let mut F: u8 = 0; //flags: [Z, N, H, C, -, -, -, -]
+                        //Z = zero, C = carry, N and H are unused on original GameBoy
+    let mut B: u8 = 0;
+    let mut C: u8 = 0;
+
+    let mut D: u8 = 0;
+    let mut E: u8 = 0;
+
+    let mut H: u8 = 0;
+    let mut L: u8 = 0;
+    // HL can hold a memory address, which you can put into SP with LD SP,HL
+
+    let mut SP: u16 = 0; //stack pointer
+    let mut PC: u16 = 0;
+
+    let mut cpuCycles: u32 = 0;
+
+    //MMU
+    //address space
+    let mut memory: [u8; 65536] = [0; 65536];
+    memory[..256].clone_from_slice(&BIOS_ROM);
+
+    loop
+    {
+        //PC == 0 at start
+        println!{"current byte at {:04x}: {:02x}", PC, memory[PC as usize]};
+
+        //instruction decode
+        let currentByte = PCReadByte(&mut PC, &memory, &mut cpuCycles);
+        match currentByte
+        {
+            0x00 => println!("NOP"),
+            0x10 => println!("STOP"),
+
+            // 16-bit loads
+            0x01 => println!("LD BC, d16"),
+            0x11 => println!("LD DE, d16"),
+            0x21 => 
+            {
+                L = PCReadByte(&mut PC, &memory, &mut cpuCycles);
+                H = PCReadByte(&mut PC, &memory, &mut cpuCycles);
+                println!("LD HL, ${:02x}{:02x}", H, L);
+            },
+            0x31 => 
+            {
+                SP = PCReadByte(&mut PC, &memory, &mut cpuCycles) as u16;
+                SP |= (PCReadByte(&mut PC, &memory, &mut cpuCycles) as u16) << 8;
+                println!("LD SP, ${:04x}", SP);
+            },
+            0xaf =>
+            {
+                A ^= A;
+                if A == 0
+                {
+                    F = 0x8; // 1000
+                }
+                println!("XOR A: ${:04x}", A);
+                println!("F (ZNHC): {:02b}", F);
+            },
+            0xa8 =>
+            {
+                A ^= B;
+                if A == 0
+                {
+                    F = 0x8; // 1000
+                }
+                println!("XOR A, B: ${:04x}, ${:04x}", A, B);
+                println!("F (ZNHC): {:02b}", F);
+            },
+            0xa9 => println!("XOR C"),
+            0xaa => println!("XOR D"),
+            0xab => println!("XOR E"),
+            0xac => println!("XOR H"),
+            0xad => println!("XOR L"),
+            0xae => println!("XOR HL"),
+            0xee => println!("XOR d8"),
+
+            _ => println!("not an opcode"),
+        }
+
+        if PC > 255
+        {
+            break;
+        }
     }
 }
