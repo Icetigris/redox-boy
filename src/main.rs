@@ -17,7 +17,7 @@ const BIOS_ROM: [u8; 256] = [
 0x21,0x04, 0x01,0x11, 0xa8,0x00, 0x1a,0x13, 0xbe,0x20, 0xfe,0x23, 0x7d,0xfe, 0x34,0x20,
 0xf5,0x06, 0x19,0x78, 0x86,0x23, 0x05,0x20, 0xfb,0x86, 0x20,0xfe, 0x3e,0x01, 0xe0,0x50];
 
-fn PCReadByte(PC: &mut u16, memory: &[u8; 65536], cycles: &mut u32) -> u8
+fn PCReadByte(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16) -> u8
 {
     let byte = memory[*PC as usize];
     (*PC) += 1;
@@ -58,7 +58,7 @@ fn main()
         println!{"current byte at {:04x}: {:02x}", PC, memory[PC as usize]};
 
         //instruction decode
-        let currentByte = PCReadByte(&mut PC, &memory, &mut cpuCycles);
+        let currentByte = PCReadByte(&memory, &mut cpuCycles, &mut PC);
         match currentByte
         {
             0x00 => println!("NOP"),
@@ -69,14 +69,14 @@ fn main()
             0x11 => println!("LD DE, d16"),
             0x21 => 
             {
-                L = PCReadByte(&mut PC, &memory, &mut cpuCycles);
-                H = PCReadByte(&mut PC, &memory, &mut cpuCycles);
+                L = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                H = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 println!("LD HL, ${:02x}{:02x}", H, L);
             },
             0x31 => 
             {
-                SP = PCReadByte(&mut PC, &memory, &mut cpuCycles) as u16;
-                SP |= (PCReadByte(&mut PC, &memory, &mut cpuCycles) as u16) << 8;
+                SP = PCReadByte(&memory, &mut cpuCycles, &mut PC) as u16;
+                SP |= (PCReadByte(&memory, &mut cpuCycles, &mut PC) as u16) << 8;
                 println!("LD SP, ${:04x}", SP);
             },
             0xaf =>
