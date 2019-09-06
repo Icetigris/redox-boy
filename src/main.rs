@@ -77,6 +77,44 @@ fn main()
             0x00 => println!("NOP"),
             0x10 => println!("STOP"),
 
+            // relative jumps
+            0x18 =>
+            { 
+                //JR
+            }
+            0x20 =>
+            {
+                //JR NZ - last result not zero?: PC +/- signed immediate
+                let offset: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("JR NZ offset {}", offset);
+                if F & 0x80 != 0 // check Z flag
+                {
+                    if offset > 0x7f //if immediate is larger than 127
+                    {
+                        //this number is negative, so 2s complement into an unsigned absolute value we can subtract
+                        let signedOffset: u8 = (!offset + 1) & 0xff;
+                        PC -= signedOffset as u16;
+                        println!("JR NZ PC - offset {}, {}", PC, signedOffset);
+                    }
+                    else
+                    {
+                        PC += offset as u16;
+                        println!("JR NZ PC + offset {}", PC);
+                    }
+                }
+            },
+            0x28 =>
+            { 
+                //JR Z
+            }
+            0x30 =>
+            {
+                //JR NC
+            }
+            0x38 =>
+            { 
+                //JR C
+            }
             // 16-bit loads
             0x01 => println!("LD BC, d16"),
             0x11 => println!("LD DE, d16"),
