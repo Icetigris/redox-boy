@@ -25,13 +25,26 @@ fn PCReadByte(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16) -> u8
     return byte;
 }
 
+fn WriteByte(memory: &mut [u8; 65536], cycles: &mut u32, byte: u8, writeDest: u16)
+{
+    memory[writeDest as usize] = byte;
+    (*cycles) += 4;
+}
+
+fn WriteHL(cycles: &mut u32, hl: u16, H: &mut u8, L: &mut u8)
+{
+    *H = (hl >> 8) as u8;
+    *L = (0x00ff & hl) as u8;
+    (*cycles) += 4;
+}
+
 fn main()
 {    
     //CPU
     //registers
     let mut A: u8 = 0; //accumulator
     let mut F: u8 = 0; //flags: [Z, N, H, C, -, -, -, -]
-                        //Z = zero, C = carry, N and H are unused on original GameBoy
+                        //Z = zero, N = negative, H = half-carry, C = carry
     let mut B: u8 = 0;
     let mut C: u8 = 0;
 
@@ -79,6 +92,19 @@ fn main()
                 SP |= (PCReadByte(&memory, &mut cpuCycles, &mut PC) as u16) << 8;
                 println!("LD SP, ${:04x}", SP);
             },
+            0x32 => 
+            {
+                //memory[HL] = A
+                //HL--
+                let hl: u16 = ((H as u16) << 8) | (L as u16);
+                println!("mem at {:04x}: {:04x}", hl, memory[hl as usize]);
+                WriteByte(&mut memory, &mut cpuCycles, A, hl);
+                println!("HL, ${:02x}{:02x}", H, L);
+                WriteHL(&mut cpuCycles, hl - 1, &mut H, &mut L);
+                println!("HL, ${:02x}{:02x}", H, L);
+                println!("LD (HL-), A", );
+            },
+            // XORs
             0xaf =>
             {
                 A ^= A;
