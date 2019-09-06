@@ -76,7 +76,17 @@ fn main()
         {
             0x00 => println!("NOP"),
             0x10 => println!("STOP"),
-
+            // immediate loads
+            0x0e =>
+            {
+                C = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD C, {:02x}", C);
+            }
+            0x3e =>
+            {
+                A = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD A, {:02x}", A);
+            }
             // relative jumps
             0x18 =>
             { 
