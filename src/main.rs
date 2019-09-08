@@ -125,6 +125,42 @@ fn main()
             { 
                 //JR C
             }
+            // 8-bit register increments
+            0x04 => 
+            {
+                B += 1;
+                println!("INC B");
+            },
+            0x14 => 
+            {
+                D += 1;
+                println!("INC D");
+            },
+            0x24 => 
+            {
+                H += 1;
+                println!("INC H");
+            },
+            0x0c => 
+            {
+                C += 1;
+                println!("INC C");
+            },
+            0x1c => 
+            {
+                E += 1;
+                println!("INC E");
+            },
+            0x2c => 
+            {
+                L += 1;
+                println!("INC L");
+            },
+            0x3c => 
+            {
+                A += 1;
+                println!("INC A");
+            },
             // 16-bit loads
             0x01 => println!("LD BC, d16"),
             0x11 => println!("LD DE, d16"),
