@@ -229,6 +229,15 @@ fn main()
                 println!("LD (HL), A: store {:02x} at (${:02x}{:02x})", A, H, L);
                 println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
             },
+            0xe0 =>
+            {
+                // store A at memory address $FF00 + immediate value
+                let immediate: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                let destAddr: u16 = 0xff00 + immediate as u16;
+                WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
+                println!("LDH (n),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, immediate, destAddr);
+                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+            },
             0xe2 =>
             {
                 // store A at address $FF00 + C
