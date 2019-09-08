@@ -50,6 +50,21 @@ fn WriteHL(cycles: &mut u32, hl: u16, H: &mut u8, L: &mut u8)
     (*cycles) += 4;
 }
 
+fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
+{
+    //save PC at current stack address
+    let hiPC: u8 = (PC >> 8) as u8;
+    let loPC: u8 = (PC & 0x00ff) as u8;
+    println!("Saving PC (${:04x}) at SP (${:04x}).", PC, SP);
+    memory[*SP as usize] = loPC;
+    (*SP) -= 1;
+    memory[*SP as usize] = hiPC;
+    (*SP) -= 1;
+    //move stack pointer down (stack grows downwards in address space)
+    println!("SP moved to ${:04x}", SP);
+    (*cycles) += 4;
+}
+
 fn main()
 {    
     //CPU
@@ -137,6 +152,14 @@ fn main()
             { 
                 //JR C
             }
+            0xcd =>
+            {
+                let jumpDestLo = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                let jumpDestHi = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                PushStack(&mut memory, &mut cpuCycles, PC, &mut SP);
+                PC = Pack16(jumpDestHi, jumpDestLo);
+                println!("CALL ${:02x}{:02x}", jumpDestHi, jumpDestLo);
+            },
             // 8-bit register increments
             0x04 => 
             {
