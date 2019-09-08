@@ -180,6 +180,14 @@ fn main()
             0xad => println!("XOR L"),
             0xae => println!("XOR HL"),
             0xee => println!("XOR d8"),
+            0xe2 =>
+            {
+                // store A at address $FF00 + C
+                let destAddr: u16 = 0xff00 + C as u16;
+                WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
+                println!("LD (C),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, C, destAddr);
+                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+            },
             // Prefix CB
             0xcb =>
             {
