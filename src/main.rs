@@ -17,9 +17,9 @@ const BIOS_ROM: [u8; 256] = [
 0x21,0x04, 0x01,0x11, 0xa8,0x00, 0x1a,0x13, 0xbe,0x20, 0xfe,0x23, 0x7d,0xfe, 0x34,0x20,
 0xf5,0x06, 0x19,0x78, 0x86,0x23, 0x05,0x20, 0xfb,0x86, 0x20,0xfe, 0x3e,0x01, 0xe0,0x50];
 
-fn CombineRegisters(r0: u8, r1: u8) -> u16
+fn Pack16(hi: u8, lo: u8) -> u16
 {
-    return ((r0 as u16) << 8) | (r1 as u16);
+    return ((hi as u16) << 8) | (lo as u16);
 }
 
 fn PCReadByte(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16) -> u8
@@ -242,14 +242,14 @@ fn main()
             {
                 //load value from address in DE into A
                 //A = memory[DE]
-                let de = CombineRegisters(D, E);
+                let de = Pack16(D, E);
                 A = ReadByte(&memory, &mut cpuCycles, de);
                 println!("LD A, (DE): load A with data at address in DE. A ({:02x}) = mem[${:02x}{:02x}]", A, D, E);
             },
             0x77 =>
             {
                 // store A at address in HL
-                let destAddr = CombineRegisters(H, L);
+                let destAddr = Pack16(H, L);
                 WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
                 println!("LD (HL), A: store {:02x} at (${:02x}{:02x})", A, H, L);
                 println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
