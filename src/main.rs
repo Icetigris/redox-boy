@@ -167,8 +167,18 @@ fn main()
                 println!("INC A");
             },
             // 16-bit loads
-            0x01 => println!("LD BC, d16"),
-            0x11 => println!("LD DE, d16"),
+            0x01 => 
+            {
+                C = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                B = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD BC, ${:02x}{:02x}", B, C);
+            },
+            0x11 => 
+            {
+                E = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                D = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD DE, ${:02x}{:02x}", D, E);
+            },
             0x21 => 
             {
                 L = PCReadByte(&memory, &mut cpuCycles, &mut PC);
