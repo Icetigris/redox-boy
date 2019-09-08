@@ -30,6 +30,13 @@ fn PCReadByte(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16) -> u8
     return byte;
 }
 
+fn ReadByte(memory: &[u8; 65536], cycles: &mut u32, readSrcAddr: u16) -> u8
+{
+    let byte = memory[readSrcAddr as usize];
+    (*cycles) += 4;
+    return byte;
+}
+
 fn WriteByte(memory: &mut [u8; 65536], cycles: &mut u32, byte: u8, writeDest: u16)
 {
     memory[writeDest as usize] = byte;
@@ -231,6 +238,14 @@ fn main()
             0xad => println!("XOR L"),
             0xae => println!("XOR HL"),
             0xee => println!("XOR d8"),
+            0x1a =>
+            {
+                //load value from address in DE into A
+                //A = memory[DE]
+                let de = CombineRegisters(D, E);
+                A = ReadByte(&memory, &mut cpuCycles, de);
+                println!("LD A, (DE): load A with data at address in DE. A ({:02x}) = mem[${:02x}{:02x}]", A, D, E);
+            },
             0x77 =>
             {
                 // store A at address in HL
