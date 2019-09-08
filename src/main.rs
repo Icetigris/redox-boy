@@ -196,6 +196,252 @@ fn main()
                 A += 1;
                 println!("INC A");
             },
+            // 8-bit register loads
+            0x40 => 
+            {
+                B = B;
+                println!("LD B,B: {:02x}", B);
+            },
+            0x41 => 
+            {
+                B = C;
+                println!("LD B,C: {:02x}", C);
+            },
+            0x42 => 
+            {
+                B = D;
+                println!("LD B,D: {:02x}", D);
+            },
+            0x43 => 
+            {
+                B = E;
+                println!("LD B,E: {:02x}", E);
+            },
+            0x44 => 
+            {
+                B = H;
+                println!("LD B,H: {:02x}", H);
+            },
+            0x45 => 
+            {
+                B = L;
+                println!("LD B,L: {:02x}", L);
+            },
+            0x47 => 
+            {
+                B = A;
+                println!("LD B,A: {:02x}", A);
+            },
+            0x48 => 
+            {
+                C = B;
+                println!("LD C,B: {:02x}", B);
+            },
+            0x49 => 
+            {
+                C = C;
+                println!("LD C,C: {:02x}", C);
+            },
+            0x4a => 
+            {
+                C = D;
+                println!("LD C,D: {:02x}", D);
+            },
+            0x4b => 
+            {
+                C = E;
+                println!("LD C,E: {:02x}", E);
+            },
+            0x4c => 
+            {
+                C = H;
+                println!("LD C,H: {:02x}", H);
+            },
+            0x4d => 
+            {
+                C = L;
+                println!("LD C,L: {:02x}", L);
+            },
+            0x4f =>
+            {
+                C = A;
+                println!("LD C,A: {:02x}", C);
+            },
+            0x50 => 
+            {
+                D = B;
+                println!("LD D,B: {:02x}", B);
+            },
+            0x51 => 
+            {
+                D = C;
+                println!("LD D,C: {:02x}", C);
+            },
+            0x52 => 
+            {
+                D = D;
+                println!("LD D,D: {:02x}", D);
+            },
+            0x53 => 
+            {
+                D = E;
+                println!("LD D,E: {:02x}", E);
+            },
+            0x54 => 
+            {
+                D = H;
+                println!("LD D,H: {:02x}", H);
+            },
+            0x55 => 
+            {
+                D = L;
+                println!("LD D,L: {:02x}", L);
+            },
+            0x57 => 
+            {
+                D = A;
+                println!("LD D,A: {:02x}", A);
+            },
+            0x58 => 
+            {
+                E = B;
+                println!("LD E,B: {:02x}", B);
+            },
+            0x59 => 
+            {
+                E = C;
+                println!("LD E,C: {:02x}", C);
+            },
+            0x5a => 
+            {
+                E = D;
+                println!("LD E,D: {:02x}", D);
+            },
+            0x5b => 
+            {
+                E = E;
+                println!("LD E,E: {:02x}", E);
+            },
+            0x5c => 
+            {
+                E = H;
+                println!("LD E,H: {:02x}", H);
+            },
+            0x5d => 
+            {
+                E = L;
+                println!("LD E,L: {:02x}", L);
+            },
+            0x5f => 
+            {
+                E = A;
+                println!("LD E,A: {:02x}", A);
+            },
+            0x60 => 
+            {
+                H = B;
+                println!("LD H,B: {:02x}", B);
+            },
+            0x61 => 
+            {
+                H = C;
+                println!("LD H,C: {:02x}", C);
+            },
+            0x62 => 
+            {
+                H = D;
+                println!("LD H,D: {:02x}", D);
+            },
+            0x63 => 
+            {
+                H = E;
+                println!("LD H,E: {:02x}", E);
+            },
+            0x64 => 
+            {
+                H = H;
+                println!("LD H,H: {:02x}", H);
+            },
+            0x65 => 
+            {
+                H = L;
+                println!("LD H,L: {:02x}", L);
+            },
+            0x67 => 
+            {
+                H = A;
+                println!("LD H,A: {:02x}", A);
+            },
+            0x68 => 
+            {
+                L = B;
+                println!("LD L,B: {:02x}", B);
+            },
+            0x69 => 
+            {
+                L = C;
+                println!("LD L,C: {:02x}", C);
+            },
+            0x6a => 
+            {
+                L = D;
+                println!("LD L,D: {:02x}", D);
+            },
+            0x6b => 
+            {
+                L = E;
+                println!("LD L,E: {:02x}", E);
+            },
+            0x6c => 
+            {
+                L = H;
+                println!("LD L,H: {:02x}", H);
+            },
+            0x6d => 
+            {
+                L = L;
+                println!("LD L,L: {:02x}", L);
+            },
+            0x6f => 
+            {
+                L = A;
+                println!("LD L,A: {:02x}", A);
+            },
+            0x78 => 
+            {
+                A = B;
+                println!("LD A,B: {:02x}", B);
+            },
+            0x79 => 
+            {
+                A = C;
+                println!("LD A,C: {:02x}", C);
+            },
+            0x7a => 
+            {
+                A = D;
+                println!("LD A,D: {:02x}", D);
+            },
+            0x7b => 
+            {
+                A = E;
+                println!("LD A,E: {:02x}", E);
+            },
+            0x7c => 
+            {
+                A = H;
+                println!("LD A,H: {:02x}", H);
+            },
+            0x7d => 
+            {
+                A = L;
+                println!("LD A,L: {:02x}", L);
+            },
+            0x7f => 
+            {
+                A = A;
+                println!("LD A,A: {:02x}", A);
+            },
             // 16-bit loads
             0x01 => 
             {
