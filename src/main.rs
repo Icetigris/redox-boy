@@ -103,17 +103,6 @@ fn main()
         {
             0x00 => println!("NOP"),
             0x10 => println!("STOP"),
-            // immediate loads
-            0x0e =>
-            {
-                C = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD C, {:02x}", C);
-            }
-            0x3e =>
-            {
-                A = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD A, {:02x}", A);
-            }
             // relative jumps
             0x18 =>
             { 
@@ -196,6 +185,42 @@ fn main()
                 A += 1;
                 println!("INC A");
             },
+            // 8-bit immediate loads
+            0x06 => 
+            {
+                B = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD B,n: {:02x}", B);
+            },
+            0x0e => 
+            {
+                C = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD C,n: {:02x}", C);
+            },
+            0x16 => 
+            {
+                D = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD D,n: {:02x}", D);
+            },
+            0x1e => 
+            {
+                E = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD E,n: {:02x}", E);
+            },
+            0x26 => 
+            {
+                H = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD H,n: {:02x}", H);
+            },
+            0x2e => 
+            {
+                L = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD L,n: {:02x}", L);
+            },
+            0x3e =>
+            {
+                A = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("LD A, {:02x}", A);
+            }
             // 8-bit register loads
             0x40 => 
             {
