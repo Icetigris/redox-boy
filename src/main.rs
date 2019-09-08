@@ -723,19 +723,23 @@ fn main()
                     0x7b => println!("BIT 7, E"),
                     0x7c => 
                     {
+                        // test bit 7 in H
+                        // Z = 1 if bit 7 is 0
+                        // N = 0
+                        // H = 1                        
                         // 1000 0000
                         if H & 0x80 == 0
                         {
                             let fc = F & 0x01;
-                            F = 0xa | fc; //1010
+                            F = 0xa0 | fc; //1010 0000
                         }
                         else
                         {
                             let fc = F & 0x01;
-                            F = 0x2 | fc; //0010
+                            F = 0x20 | fc; //0010 0000
                         }
                         println!("BIT 7, H: {:02x} ({:08b})", H,H);
-                        println!("F (ZNHC): {:04b}", F);
+                        println!("F (ZNHC): {:08b}", F);
                     },
                     0x7d => println!("BIT 7, L"),
                     0x7e => println!("BIT 7, (HL)"),
