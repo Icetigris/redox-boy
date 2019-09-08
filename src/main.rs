@@ -17,6 +17,11 @@ const BIOS_ROM: [u8; 256] = [
 0x21,0x04, 0x01,0x11, 0xa8,0x00, 0x1a,0x13, 0xbe,0x20, 0xfe,0x23, 0x7d,0xfe, 0x34,0x20,
 0xf5,0x06, 0x19,0x78, 0x86,0x23, 0x05,0x20, 0xfb,0x86, 0x20,0xfe, 0x3e,0x01, 0xe0,0x50];
 
+fn CombineRegisters(r0: u8, r1: u8) -> u16
+{
+    return ((r0 as u16) << 8) | (r1 as u16);
+}
+
 fn PCReadByte(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16) -> u8
 {
     let byte = memory[*PC as usize];
@@ -216,6 +221,14 @@ fn main()
             0xad => println!("XOR L"),
             0xae => println!("XOR HL"),
             0xee => println!("XOR d8"),
+            0x77 =>
+            {
+                // store A at address in HL
+                let destAddr = CombineRegisters(H, L);
+                WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
+                println!("LD (HL), A: store {:02x} at (${:02x}{:02x})", A, H, L);
+                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+            },
             0xe2 =>
             {
                 // store A at address $FF00 + C
