@@ -272,6 +272,42 @@ fn main()
                 A += 1;
                 println!("INC A");
             },
+            // 8-bit register decrements
+            0x05 => 
+            {
+                B -= 1;
+                println!("DEC B");
+            },
+            0x15 => 
+            {
+                D -= 1;
+                println!("DEC D");
+            },
+            0x25 => 
+            {
+                H -= 1;
+                println!("DEC H");
+            },
+            0x0d => 
+            {
+                C -= 1;
+                println!("DEC C");
+            },
+            0x1d => 
+            {
+                E -= 1;
+                println!("DEC E");
+            },
+            0x2d => 
+            {
+                L -= 1;
+                println!("DEC L");
+            },
+            0x3d => 
+            {
+                A -= 1;
+                println!("DEC A");
+            },
             0x17 =>
             {
                 RotateLeft(&mut A, &mut F);
