@@ -122,7 +122,11 @@ fn main()
     loop
     {
         //PC == 0 at start
-        println!{"current byte at {:04x}: {:02x}", PC, memory[PC as usize]};
+        println!("============================================================================");
+        println!("A: {:02x}, B: {:02x}, C: {:02x}, D: {:02x}, E: {:02x}, H: {:02x}, L: {:02x}", A, B, C, D, E, H, L);
+        println!("F (ZNHC): {:08b}", F);
+        println!("SP: {:04x}", SP);
+        println!("current byte at PC ({:04x}): {:02x}", PC, memory[PC as usize]);
 
         //instruction decode
         let currentByte = PCReadByte(&memory, &mut cpuCycles, &mut PC);
