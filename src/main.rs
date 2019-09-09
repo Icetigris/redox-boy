@@ -64,6 +64,34 @@ fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, address: u16, SP: &mut 
     (*cycles) += 4;
 }
 
+fn RotateLeft(register: &mut u8, F: &mut u8)
+{
+    // 1101 0000->
+    // 1010 0001 (C holds 1 that came off the front and puts it back on the end)
+    // Z = 1 if result is 0
+    // N = 0
+    // H = 0
+    // C = whatever was in bit 7
+
+    // mask off bit 7 of what's in register C, right shift by 3 to stick it in C flag slot of F
+    // 1000 0000 >> 3 = 0001 0000
+    *F = (*register & 0x80) >> 3;
+
+    //left shift C
+    //put what's in C back into B in bit slot 0
+    //right shift F by 4 slots to put it in bit slot 0
+    //C = (C << 1) | (F >> 4);
+
+    //using the intrinsic saves me a couple of instructions with -C opt-level=3
+    *register = (*register).rotate_left(1);
+
+    //how do I set the Z flag without this shitty jump
+    if *register == 0
+    {
+        *F |= 0x80; //1000 0000
+    }
+}
+
 fn main()
 {    
     //CPU
@@ -208,6 +236,11 @@ fn main()
             {
                 A += 1;
                 println!("INC A");
+            },
+            0x17 =>
+            {
+                RotateLeft(&mut A, &mut F);
+                println!("RL A");
             },
             // 8-bit immediate loads
             0x06 => 
@@ -534,20 +567,20 @@ fn main()
                 A ^= A;
                 if A == 0
                 {
-                    F = 0x8; // 1000
+                    F = 0x80; // 1000
                 }
                 println!("XOR A: ${:04x}", A);
-                println!("F (ZNHC): {:02b}", F);
+                println!("F (ZNHC): {:08b}", F);
             },
             0xa8 =>
             {
                 A ^= B;
                 if A == 0
                 {
-                    F = 0x8; // 1000
+                    F = 0x80; // 1000
                 }
                 println!("XOR A, B: ${:04x}, ${:04x}", A, B);
-                println!("F (ZNHC): {:04b}", F);
+                println!("F (ZNHC): {:08b}", F);
             },
             0xa9 => println!("XOR C"),
             0xaa => println!("XOR D"),
@@ -613,14 +646,42 @@ fn main()
                     0x0d => println!("RRC L"),
                     0x0e => println!("RRC (HL)"),
                     0x0f => println!("RRC A"),
-                    0x10 => println!("RL B"),
-                    0x11 => println!("RL C"),
-                    0x12 => println!("RL D"),
-                    0x13 => println!("RL E"),
-                    0x14 => println!("RL H"),
-                    0x15 => println!("RL L"),
+                    0x10 => 
+                    {
+                        RotateLeft(&mut B, &mut F);
+                        println!("RL B");
+                    },
+                    0x11 => 
+                    {
+                        RotateLeft(&mut C, &mut F);
+                        println!("RL C");
+                    },
+                    0x12 => 
+                    {
+                        RotateLeft(&mut D, &mut F);
+                        println!("RL D");
+                    },
+                    0x13 => 
+                    {
+                        RotateLeft(&mut E, &mut F);
+                        println!("RL E");
+                    },
+                    0x14 => 
+                    {
+                        RotateLeft(&mut H, &mut F);
+                        println!("RL H");
+                    },
+                    0x15 => 
+                    {
+                        RotateLeft(&mut L, &mut F);
+                        println!("RL L");
+                    },
                     0x16 => println!("RL (HL)"),
-                    0x17 => println!("RL A"),
+                    0x17 =>
+                    {
+                        RotateLeft(&mut A, &mut F);
+                        println!("RL A");
+                    },
                     0x18 => println!("RR B"),
                     0x19 => println!("RR C"),
                     0x1a => println!("RR D"),
@@ -730,12 +791,12 @@ fn main()
                         // 1000 0000
                         if H & 0x80 == 0
                         {
-                            let fc = F & 0x01;
+                            let fc = F & 0xa0;
                             F = 0xa0 | fc; //1010 0000
                         }
                         else
                         {
-                            let fc = F & 0x01;
+                            let fc = F & 0x20;
                             F = 0x20 | fc; //0010 0000
                         }
                         println!("BIT 7, H: {:02x} ({:08b})", H,H);
