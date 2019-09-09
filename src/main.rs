@@ -64,6 +64,17 @@ fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, address: u16, SP: &mut 
     (*cycles) += 4;
 }
 
+fn PopStack(memory: &[u8; 65536], cycles: &mut u32, regHi: &mut u8, regLo: &mut u8, SP: &mut u16)
+{
+    *regLo = memory[*SP as usize];
+    (*SP) += 1;
+    (*cycles) += 4;
+    *regHi = memory[*SP as usize];
+    (*SP) += 1;
+    (*cycles) += 4;
+    println!("SP moved to ${:04x}", SP);
+}
+
 fn RotateLeft(register: &mut u8, F: &mut u8)
 {
     // 1101 0000->
@@ -204,6 +215,26 @@ fn main()
                 PushStack(&mut memory, &mut cpuCycles, PC, &mut SP);
                 PC = Pack16(jumpDestHi, jumpDestLo);
                 println!("CALL ${:02x}{:02x}", jumpDestHi, jumpDestLo);
+            },
+            0xc1 =>
+            {
+                PopStack(&memory, &mut cpuCycles, &mut B, &mut C, &mut SP);
+                println!("POP BC (${:02x}{:02x}) at SP (${:04x}).", B, C, SP);
+            },
+            0xd1 =>
+            {
+                PopStack(&memory, &mut cpuCycles, &mut D, &mut E, &mut SP);
+                println!("POP DE (${:02x}{:02x}) at SP (${:04x}).", D, E, SP);
+            },
+            0xe1 =>
+            {
+                PopStack(&memory, &mut cpuCycles, &mut H, &mut L, &mut SP);
+                println!("POP HL (${:02x}{:02x}) at SP (${:04x}).", H, L, SP);
+            },
+            0xf1 =>
+            {
+                PopStack(&memory, &mut cpuCycles, &mut A, &mut F, &mut SP);
+                println!("POP AF (${:02x}{:02x}) at SP (${:04x}).", A, F, SP);
             },
             // 8-bit register increments
             0x04 => 
