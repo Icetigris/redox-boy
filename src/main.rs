@@ -43,7 +43,7 @@ fn WriteByte(memory: &mut [u8; 65536], cycles: &mut u32, byte: u8, writeDest: u1
     (*cycles) += 4;
 }
 
-fn WriteHL(cycles: &mut u32, hl: u16, H: &mut u8, L: &mut u8)
+fn WriteHL(hl: u16, H: &mut u8, L: &mut u8)
 {
     *H = (hl >> 8) as u8;
     *L = (0x00ff & hl) as u8;
@@ -233,6 +233,7 @@ fn main()
                 if F & 0x80 != 0 // check Z flag
                 if F & 0x80 == 0 // jump if Z flag is 0
                 {
+                    cpuCycles += 4;
                     if offset > 0x7f //if immediate is larger than 127
                     {
                         //this number is negative, so 2s complement into an unsigned absolute value we can subtract
@@ -722,7 +723,7 @@ fn main()
                 println!("mem at {:04x}: {:04x}", hl, memory[hl as usize]);
                 WriteByte(&mut memory, &mut cpuCycles, A, hl);
                 println!("HL, ${:02x}{:02x}", H, L);
-                WriteHL(&mut cpuCycles, hl - 1, &mut H, &mut L);
+                WriteHL(hl - 1, &mut H, &mut L);
                 println!("HL, ${:02x}{:02x}", H, L);
                 println!("LD (HL-), A", );
             },
