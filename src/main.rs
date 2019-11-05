@@ -690,6 +690,24 @@ fn main()
                 H = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 println!("LD HL, ${:02x}{:02x}", H, L);
             },
+            0x22 => 
+            {
+                //memory[HL] = A
+                //HL++
+                let hl: u16 = ((H as u16) << 8) | (L as u16);
+                println!("mem at {:04x}: {:04x}", hl, memory[hl as usize]);
+                WriteByte(&mut memory, &mut cpuCycles, A, hl);
+                println!("HL, ${:02x}{:02x}", H, L);
+                WriteHL(hl + 1, &mut H, &mut L);
+                println!("HL, ${:02x}{:02x}", H, L);
+                println!("LD (HL+), A", );
+            },
+            0x23 =>
+            {
+                let hl: u16 = ((H as u16) << 8) | (L as u16);
+                WriteHL(hl + 1, &mut H, &mut L);
+                println!("INC HL, ${:02x}{:02x}", H, L);
+            },
             0x31 => 
             {
                 SP = PCReadByte(&memory, &mut cpuCycles, &mut PC) as u16;
