@@ -156,6 +156,7 @@ fn main()
                 let offset: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 println!("JR NZ offset {}", offset);
                 if F & 0x80 != 0 // check Z flag
+                if F & 0x80 == 0 // jump if Z flag is 0
                 {
                     if offset > 0x7f //if immediate is larger than 127
                     {
