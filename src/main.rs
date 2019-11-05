@@ -75,6 +75,81 @@ fn PopStack(memory: &[u8; 65536], cycles: &mut u32, regHi: &mut u8, regLo: &mut 
     println!("SP moved to ${:04x}", SP);
 }
 
+fn SetZ(F: &mut u8)
+{
+    *F |= 0x80; //1000 0000
+}
+
+fn ResetZ(F: &mut u8)
+{
+    *F &= 0x70; // 0111 0000
+}
+
+fn SetN(F : &mut u8)
+{
+    *F |= 0x40; // 0100 0000
+}
+
+fn ResetN(F : &mut u8)
+{
+    *F &= 0xb0; // 1011 0000
+}
+
+fn SetH(F : &mut u8)
+{
+    *F |= 0x20; // 0010 0000
+}
+
+fn ResetH(F : &mut u8)
+{
+    *F &= 0xd0; // 1101 0000
+}
+
+fn ResetZN(F : &mut u8)
+{
+    *F &= 0x30; // 0011 0000
+}
+
+fn Increment(register: &mut u8, F: &mut u8)
+{
+    *register = (*register) + 1;
+    
+    *F = 0;
+    // would use __readeflags intrinsic here IF IT WAS SUPPORTED
+    if *register == 0
+    {
+        SetZ(&mut *F);
+    }
+
+    ResetN(&mut *F);
+
+    //set H if carry from bit 3 (??)
+    if *register & 0xf == 0
+    {
+        SetH(&mut *F);
+    }
+}
+
+fn Decrement(register: &mut u8, F: &mut u8)
+{
+    *register = (*register) - 1;
+    
+    *F = 0;
+    // would use __readeflags intrinsic here IF IT WAS SUPPORTED
+    if *register == 0
+    {
+        SetZ(&mut *F);
+    }
+    
+    SetN(&mut *F);
+
+    // set H if no borrow from bit 4 (??)
+    if *register & 0xf == 0xf
+    {
+        SetH(&mut *F);
+    }
+}
+
 fn RotateLeft(register: &mut u8, F: &mut u8)
 {
     // 1101 0000->
@@ -99,7 +174,7 @@ fn RotateLeft(register: &mut u8, F: &mut u8)
     //how do I set the Z flag without this shitty jump
     if *register == 0
     {
-        *F |= 0x80; //1000 0000
+        SetZ(&mut *F);
     }
 }
 
@@ -240,73 +315,73 @@ fn main()
             // 8-bit register increments
             0x04 => 
             {
-                B += 1;
+                Increment(&mut B, &mut F);
                 println!("INC B");
             },
             0x14 => 
             {
-                D += 1;
+                Increment(&mut D, &mut F);
                 println!("INC D");
             },
             0x24 => 
             {
-                H += 1;
+                Increment(&mut H, &mut F);
                 println!("INC H");
             },
             0x0c => 
             {
-                C += 1;
+                Increment(&mut C, &mut F);
                 println!("INC C");
             },
             0x1c => 
             {
-                E += 1;
+                Increment(&mut E, &mut F);
                 println!("INC E");
             },
             0x2c => 
             {
-                L += 1;
+                Increment(&mut L, &mut F);
                 println!("INC L");
             },
             0x3c => 
             {
-                A += 1;
+                Increment(&mut A, &mut F);
                 println!("INC A");
             },
             // 8-bit register decrements
             0x05 => 
             {
-                B -= 1;
+                Decrement(&mut B, &mut F);
                 println!("DEC B");
             },
             0x15 => 
             {
-                D -= 1;
+                Decrement(&mut D, &mut F);
                 println!("DEC D");
             },
             0x25 => 
             {
-                H -= 1;
+                Decrement(&mut H, &mut F);
                 println!("DEC H");
             },
             0x0d => 
             {
-                C -= 1;
+                Decrement(&mut C, &mut F);
                 println!("DEC C");
             },
             0x1d => 
             {
-                E -= 1;
+                Decrement(&mut E, &mut F);
                 println!("DEC E");
             },
             0x2d => 
             {
-                L -= 1;
+                Decrement(&mut L, &mut F);
                 println!("DEC L");
             },
             0x3d => 
             {
-                A -= 1;
+                Decrement(&mut A, &mut F);
                 println!("DEC A");
             },
             0x17 =>
