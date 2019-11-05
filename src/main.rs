@@ -159,7 +159,7 @@ fn RotateLeft(register: &mut u8, F: &mut u8)
     // H = 0
     // C = whatever was in bit 7
 
-    // mask off bit 7 of what's in register C, right shift by 3 to stick it in C flag slot of F
+    // mask off bit 7 of what's in the register, right shift by 3 to stick it in C flag slot of F
     // 1000 0000 >> 3 = 0001 0000
     *F = (*register & 0x80) >> 3;
 
@@ -934,7 +934,7 @@ fn main()
                         // test bit 7 in H
                         // Z = 1 if bit 7 is 0
                         // N = 0
-                        // H = 1                        
+                        // H = 1
                         // 1000 0000
                         if H & 0x80 == 0
                         {
