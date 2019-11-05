@@ -49,8 +49,8 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
-            "environment": [],
-            "externalConsole": true,
+            "environment": [{"name" : "RUST_BACKTRACE", "value" : "1"}],
+            "externalConsole": false,
             "preLaunchTask": "Cargo Build"
         }
     ]
