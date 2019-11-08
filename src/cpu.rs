@@ -46,7 +46,7 @@ fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, regHi: u8, regLo: u8, S
     (*cycles) += 4;
 }
 
-fn PushStackPC(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
+fn Call(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
 {
     //save PC at current stack address
     let hiAddressBits: u8 = (PC >> 8) as u8;
@@ -68,6 +68,19 @@ fn PopStack(memory: &[u8; 65536], cycles: &mut u32, regHi: &mut u8, regLo: &mut 
     *regHi = memory[*SP as usize];
     (*SP) += 1;
     (*cycles) += 4;
+    println!("SP moved to ${:04x}", SP);
+}
+
+fn Return(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16, SP: &mut u16)
+{
+    // Pop 16 bits off stack and jump to that address
+    let loPC: u16 = memory[*SP as usize] as u16;
+    (*SP) += 1;
+    (*cycles) += 4;
+    let hiPC: u16 = memory[*SP as usize] as u16;
+    (*SP) += 1;
+    (*cycles) += 4;
+    *PC = ((hiPC as u16) << 8) | loPC;
     println!("SP moved to ${:04x}", SP);
 }
 
@@ -283,7 +296,7 @@ pub fn Run(mem: &mut [u8; 65536])
                 let jumpDestLo = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 let jumpDestHi = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 println!("Saving PC (${:04x}) at SP (${:04x}).", PC, SP);
-                PushStackPC(&mut memory, &mut cpuCycles, PC, &mut SP);
+                Call(&mut memory, &mut cpuCycles, PC, &mut SP);
                 PC = Pack16(jumpDestHi, jumpDestLo);
                 println!("CALL ${:02x}{:02x}", jumpDestHi, jumpDestLo);
             },
@@ -291,6 +304,11 @@ pub fn Run(mem: &mut [u8; 65536])
             {
                 PopStack(&memory, &mut cpuCycles, &mut B, &mut C, &mut SP);
                 println!("POP BC (${:02x}{:02x}) at SP (${:04x}).", B, C, SP);
+            },
+            0xc9 =>
+            {
+                Return(&memory, &mut cpuCycles, &mut PC, &mut SP);
+                println!("RET (${:04x}) at SP (${:04x}).", PC, SP);
             },
             0xd1 =>
             {
