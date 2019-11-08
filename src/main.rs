@@ -47,14 +47,25 @@ fn WriteHL(hl: u16, H: &mut u8, L: &mut u8)
 {
     *H = (hl >> 8) as u8;
     *L = (0x00ff & hl) as u8;
+}
+
+fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, regHi: u8, regLo: u8, SP: &mut u16)
+{
+    //save address in registers at current stack address
+    memory[*SP as usize] = regLo;
+    (*SP) -= 1;
+    memory[*SP as usize] = regHi;
+    (*SP) -= 1;
+    //move stack pointer down (stack grows downwards in address space)
+    println!("SP moved to ${:04x}", SP);
     (*cycles) += 4;
 }
 
-fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, address: u16, SP: &mut u16)
+fn PushStackPC(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
 {
     //save PC at current stack address
-    let hiAddressBits: u8 = (address >> 8) as u8;
-    let loAddressBits: u8 = (address & 0x00ff) as u8;
+    let hiAddressBits: u8 = (PC >> 8) as u8;
+    let loAddressBits: u8 = (PC & 0x00ff) as u8;
     memory[*SP as usize] = loAddressBits;
     (*SP) -= 1;
     memory[*SP as usize] = hiAddressBits;
@@ -264,32 +275,32 @@ fn main()
             {
                 // PUSH BC
                 println!("PUSH BC (${:02x}{:02x}) at SP (${:04x}).", B, C, SP);
-                PushStack(&mut memory, &mut cpuCycles, Pack16(B, C), &mut SP);
+                PushStack(&mut memory, &mut cpuCycles, B, C, &mut SP);
             },
             0xd5 =>
             {
                 // PUSH DE
                 println!("PUSH DE (${:02x}{:02x}) at SP (${:04x}).", D, E, SP);
-                PushStack(&mut memory, &mut cpuCycles, Pack16(D, E), &mut SP);
+                PushStack(&mut memory, &mut cpuCycles, D, E, &mut SP);
             },
             0xe5 =>
             {
                 // PUSH HL
                 println!("PUSH HL (${:02x}{:02x}) at SP (${:04x}).", H, L, SP);
-                PushStack(&mut memory, &mut cpuCycles, Pack16(H, L), &mut SP);
+                PushStack(&mut memory, &mut cpuCycles, H, L, &mut SP);
             },
             0xf5 =>
             {
                 // PUSH AF
                 println!("PUSH AF (${:02x}{:02x}) at SP (${:04x}).", A, F, SP);
-                PushStack(&mut memory, &mut cpuCycles, Pack16(A, F), &mut SP);
+                PushStack(&mut memory, &mut cpuCycles, A, F, &mut SP);
             },
             0xcd =>
             {
                 let jumpDestLo = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 let jumpDestHi = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 println!("Saving PC (${:04x}) at SP (${:04x}).", PC, SP);
-                PushStack(&mut memory, &mut cpuCycles, PC, &mut SP);
+                PushStackPC(&mut memory, &mut cpuCycles, PC, &mut SP);
                 PC = Pack16(jumpDestHi, jumpDestLo);
                 println!("CALL ${:02x}{:02x}", jumpDestHi, jumpDestLo);
             },
