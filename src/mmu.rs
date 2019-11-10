@@ -155,8 +155,22 @@
 * ==============
 * ffff - Interrupt Enable Register
 */
-
-pub struct addressSpace
+use std::io;
+use std::io::prelude::*;
+use std::fs::File;
+pub struct AddressSpace
 {
     pub mem : [u8; 65536]
+}
+
+pub fn ReadCartridge(memory: &mut [u8; 65536]) -> io::Result<()>
+{
+    //0100 - 3fff
+    let mut cart = File::open("src/Tetris (World).gb")?;
+    let mut ROMbank0 = [0; 16127];
+    cart.read(&mut ROMbank0)?;
+
+    memory[0x0100..0x3fff].clone_from_slice(&ROMbank0);
+
+    Ok(())
 }

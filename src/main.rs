@@ -20,12 +20,17 @@ const BIOS_ROM: [u8; 256] = [
 mod mmu;
 mod cpu;
 
-fn main()
+fn main() -> Result<(), Box<dyn std::error::Error>>
 {
     // Init memory with boot ROM
-    let mut memory = mmu::addressSpace{ mem : [0; 65536]}.mem;
+    let mut memory = mmu::AddressSpace{ mem : [0; 65536]}.mem;
     memory[..256].clone_from_slice(&BIOS_ROM);
+
+    // Read cartridge
+    mmu::ReadCartridge(&mut memory)?;
 
     //Start CPU
     cpu::Run(&mut memory);
+
+    Ok(())
 }
