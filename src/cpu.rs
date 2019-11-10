@@ -37,10 +37,13 @@ fn WriteHL(hl: u16, H: &mut u8, L: &mut u8)
 fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, regHi: u8, regLo: u8, SP: &mut u16)
 {
     //save address in registers at current stack address
+    println!("save ${:02x}{:02x} at ${:04x}", regHi, regLo, SP); 
     memory[*SP as usize] = regLo;
     (*SP) -= 1;
+    (*cycles) += 4;
     memory[*SP as usize] = regHi;
     (*SP) -= 1;
+    (*cycles) += 4;
     //move stack pointer down (stack grows downwards in address space)
     println!("SP moved to ${:04x}", SP);
     (*cycles) += 4;
@@ -54,8 +57,10 @@ fn Call(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
     let loAddressBits: u8 = (PC & 0x0f) as u8;
     memory[*SP as usize] = loAddressBits;
     (*SP) -= 1;
+    (*cycles) += 4;
     memory[*SP as usize] = hiAddressBits;
     (*SP) -= 1;
+    (*cycles) += 4;
     //move stack pointer down (stack grows downwards in address space)
     println!("SP moved to ${:04x}", SP);
     (*cycles) += 4;
@@ -737,6 +742,7 @@ pub fn Run(mem: &mut [u8; 65536])
             {
                 let hl: u16 = ((H as u16) << 8) | (L as u16);
                 WriteHL(hl + 1, &mut H, &mut L);
+                cpuCycles += 4;
                 println!("INC HL, ${:02x}{:02x}", H, L);
             },
             0x31 => 
