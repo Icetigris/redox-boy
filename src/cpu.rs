@@ -189,6 +189,15 @@ fn RotateLeft(register: &mut u8, F: &mut u8)
     }
 }
 
+fn Xor(A: &mut u8, register: u8, F: &mut u8)
+{
+    *A ^= register;
+    if *A == 0
+    {
+        *F = 0x80; // 1000
+    }
+}
+
 pub fn Run(mem: &mut [u8; 65536])
 {
     //CPU
@@ -751,21 +760,14 @@ pub fn Run(mem: &mut [u8; 65536])
             // XORs
             0xaf =>
             {
-                A ^= A;
-                if A == 0
-                {
-                    F = 0x80; // 1000
-                }
+                let a = A;
+                Xor(&mut A, a, &mut F);
                 println!("XOR A: ${:04x}", A);
                 println!("F (ZNHC): {:08b}", F);
             },
             0xa8 =>
             {
-                A ^= B;
-                if A == 0
-                {
-                    F = 0x80; // 1000
-                }
+                Xor(&mut A, B, &mut F);
                 println!("XOR A, B: ${:04x}, ${:04x}", A, B);
                 println!("F (ZNHC): {:08b}", F);
             },
