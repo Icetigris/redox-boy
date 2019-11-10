@@ -49,8 +49,9 @@ fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, regHi: u8, regLo: u8, S
 fn Call(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
 {
     //save PC at current stack address
-    let hiAddressBits: u8 = (PC >> 8) as u8;
-    let loAddressBits: u8 = (PC & 0x00ff) as u8;
+    println!("save ${:04x} at ${:04x}", PC, SP);
+    let hiAddressBits: u8 = (PC >> 4) as u8;
+    let loAddressBits: u8 = (PC & 0x0f) as u8;
     memory[*SP as usize] = loAddressBits;
     (*SP) -= 1;
     memory[*SP as usize] = hiAddressBits;
@@ -74,13 +75,14 @@ fn PopStack(memory: &[u8; 65536], cycles: &mut u32, regHi: &mut u8, regLo: &mut 
 fn Return(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16, SP: &mut u16)
 {
     // Pop 16 bits off stack and jump to that address
-    let loPC: u16 = memory[*SP as usize] as u16;
+    let loPC: u8 = memory[*SP as usize];
     (*SP) += 1;
     (*cycles) += 4;
-    let hiPC: u16 = memory[*SP as usize] as u16;
+    let hiPC: u8 = memory[*SP as usize];
     (*SP) += 1;
     (*cycles) += 4;
-    *PC = ((hiPC as u16) << 8) | loPC;
+    *PC = ((hiPC as u16) << 8) | loPC as u16;
+    println!("load ${:04x} from ${:04x}", PC, *SP - 2);
     println!("SP moved to ${:04x}", SP);
 }
 
