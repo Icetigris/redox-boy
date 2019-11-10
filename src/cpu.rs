@@ -416,7 +416,13 @@ pub fn Run(mem: &mut [u8; 65536])
             // 16-bit register increments
             //0x03 => println!("INC BC"),
             //0x13 => println!("INC DE"),
-            //0x23 => println!("INC HL"),
+            0x23 =>
+            {
+                let hl: u16 = ((H as u16) << 8) | (L as u16);
+                WriteHL(hl + 1, &mut H, &mut L);
+                cpuCycles += 4;
+                println!("INC HL, ${:02x}{:02x}", H, L);
+            },
             //0x33 => println!("INC SP"),
             0x17 =>
             {
@@ -737,13 +743,6 @@ pub fn Run(mem: &mut [u8; 65536])
                 WriteHL(hl + 1, &mut H, &mut L);
                 println!("HL, ${:02x}{:02x}", H, L);
                 println!("LD (HL+), A", );
-            },
-            0x23 =>
-            {
-                let hl: u16 = ((H as u16) << 8) | (L as u16);
-                WriteHL(hl + 1, &mut H, &mut L);
-                cpuCycles += 4;
-                println!("INC HL, ${:02x}{:02x}", H, L);
             },
             0x31 => 
             {
