@@ -68,25 +68,25 @@ fn Call(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
 
 fn PopStack(memory: &[u8; 65536], cycles: &mut u32, regHi: &mut u8, regLo: &mut u8, SP: &mut u16)
 {
-    *regLo = memory[*SP as usize];
     (*SP) += 1;
     (*cycles) += 4;
     *regHi = memory[*SP as usize];
     (*SP) += 1;
     (*cycles) += 4;
+    *regLo = memory[*SP as usize];
     println!("SP moved to ${:04x}", SP);
 }
 
 fn Return(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16, SP: &mut u16)
 {
     // Pop 16 bits off stack and jump to that address
-    let loPC: u8 = memory[*SP as usize];
     (*SP) += 1;
     (*cycles) += 4;
     let hiPC: u8 = memory[*SP as usize];
     (*SP) += 1;
     (*cycles) += 4;
-    *PC = ((hiPC as u16) << 8) | loPC as u16;
+    let loPC: u8 = memory[*SP as usize];
+    *PC = ((hiPC as u16) << 4) | loPC as u16;
     println!("load ${:04x} from ${:04x}", PC, *SP - 2);
     println!("SP moved to ${:04x}", SP);
 }
