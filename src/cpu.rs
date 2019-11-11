@@ -28,6 +28,12 @@ fn WriteByte(memory: &mut [u8; 65536], cycles: &mut u32, byte: u8, writeDest: u1
     (*cycles) += 4;
 }
 
+fn Unpack8(reg16: u16, regHi: &mut u8, regLo: &mut u8)
+{
+    *regHi = (reg16 >> 8) as u8;
+    *regLo = (0x00ff & reg16) as u8;
+}
+
 fn WriteHL(hl: u16, H: &mut u8, L: &mut u8)
 {
     *H = (hl >> 8) as u8;
@@ -444,7 +450,13 @@ pub fn Run(mem: &mut [u8; 65536])
             },
             // 16-bit register increments
             //0x03 => println!("INC BC"),
-            //0x13 => println!("INC DE"),
+            0x13 => 
+            {
+                let de: u16 = ((D as u16) << 8) | (E as u16);
+                Unpack8(de + 1, &mut D, &mut E);
+                cpuCycles += 4;
+                println!("INC DE");
+            },
             0x23 =>
             {
                 let hl: u16 = ((H as u16) << 8) | (L as u16);
