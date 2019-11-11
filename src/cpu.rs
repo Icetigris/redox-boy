@@ -313,10 +313,25 @@ pub fn Run(mem: &mut [u8; 65536])
             0x00 => println!("NOP"),
             0x10 => println!("STOP"),
             // relative jumps
-            //0x18 =>
-            //{ 
-            //    //JR
-            //}
+            0x18 =>
+            {
+                //JR jump: PC +/- signed immediate
+                let offset: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                cpuCycles += 4;
+                if offset > 0x7f //if immediate is larger than 127
+                {
+                    //this number is negative, so 2s complement into an unsigned absolute value we can subtract
+                    let signedOffset: u8 = (!offset + 1) & 0xff;
+                    PC -= signedOffset as u16;
+                    println!("JR PC - offset {}, {}", PC, signedOffset);
+                    println!("JR ${:04x}", PC);
+                }
+                else
+                {
+                    PC += offset as u16;
+                    println!("JR PC + offset {}", PC);
+                }
+            }
             0x20 =>
             {
                 //JR NZ - last result not zero?: PC +/- signed immediate
