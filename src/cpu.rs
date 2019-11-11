@@ -331,6 +331,7 @@ pub fn Run(mem: &mut [u8; 65536])
                         let signedOffset: u8 = (!offset + 1) & 0xff;
                         PC -= signedOffset as u16;
                         println!("JR NZ PC - offset {}, {}", PC, signedOffset);
+                        println!("JR NZ ${:04x}", PC);
                     }
                     else
                     {
@@ -339,10 +340,29 @@ pub fn Run(mem: &mut [u8; 65536])
                     }
                 }
             },
-            //0x28 =>
-            //{ 
-            //    //JR Z
-            //}
+            0x28 =>
+            {
+                //JR Z - last result zero?: PC +/- signed immediate
+                let offset: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                println!("JR Z offset {}", offset);
+                if F & 0x80 != 0 // jump if Z flag is 1
+                {
+                    cpuCycles += 4;
+                    if offset > 0x7f //if immediate is larger than 127
+                    {
+                        //this number is negative, so 2s complement into an unsigned absolute value we can subtract
+                        let signedOffset: u8 = (!offset + 1) & 0xff;
+                        PC -= signedOffset as u16;
+                        println!("JR Z PC - offset {}, {}", PC, signedOffset);
+                        println!("JR Z ${:04x}", PC);
+                    }
+                    else
+                    {
+                        PC += offset as u16;
+                        println!("JR Z PC + offset {}", PC);
+                    }
+                }
+            }
             //0x30 =>
             //{
             //    //JR NC
