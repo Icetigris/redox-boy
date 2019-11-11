@@ -166,6 +166,35 @@ fn Decrement(register: &mut u8, F: &mut u8)
     }
 }
 
+fn RotateLeftThroughCarry(register: &mut u8, F: &mut u8)
+{
+    // 1101 0000->
+    // 1010 0001 (C holds 1 that came off the front and puts it back on the end)
+    // Z = 1 if result is 0
+    // N = 0
+    // H = 0
+    // C = whatever was in bit 7
+    let oldCF = (*F >> 4) & 0x1;
+
+    // mask off bit 7 of what's in the register, right shift by 3 to stick it in C flag slot of F
+    // 1000 0000 >> 3 = 0001 0000
+    *F = (*register & 0x80) >> 3;
+
+    //left shift C
+    //put what's in C back into the register in bit slot 0
+    //right shift F by 4 slots to put it in bit slot 0
+    *register = (*register << 1) | oldCF;
+
+    //using the intrinsic saves me a couple of instructions with -C opt-level=3
+    //*register = (*register as u16).rotate_left(1) as u8;
+
+    //how do I set the Z flag without this shitty jump
+    if *register == 0
+    {
+        SetZ(&mut *F);
+    }
+}
+
 fn RotateLeft(register: &mut u8, F: &mut u8)
 {
     // 1101 0000->
@@ -180,9 +209,9 @@ fn RotateLeft(register: &mut u8, F: &mut u8)
     *F = (*register & 0x80) >> 3;
 
     //left shift C
-    //put what's in C back into B in bit slot 0
+    //put what's in C back into the register in bit slot 0
     //right shift F by 4 slots to put it in bit slot 0
-    //C = (C << 1) | (F >> 4);
+    //*register = (*register << 1) | (*F >> 4);
 
     //using the intrinsic saves me a couple of instructions with -C opt-level=3
     *register = (*register).rotate_left(1);
@@ -426,7 +455,7 @@ pub fn Run(mem: &mut [u8; 65536])
             //0x33 => println!("INC SP"),
             0x17 =>
             {
-                RotateLeft(&mut A, &mut F);
+                RotateLeftThroughCarry(&mut A, &mut F);
                 println!("RL A");
             },
             // increment value at address in HL
@@ -842,38 +871,38 @@ pub fn Run(mem: &mut [u8; 65536])
                     //0x0f => println!("RRC A"),
                     0x10 => 
                     {
-                        RotateLeft(&mut B, &mut F);
+                        RotateLeftThroughCarry(&mut B, &mut F);
                         println!("RL B");
                     },
                     0x11 => 
                     {
-                        RotateLeft(&mut C, &mut F);
+                        RotateLeftThroughCarry(&mut C, &mut F);
                         println!("RL C");
                     },
                     0x12 => 
                     {
-                        RotateLeft(&mut D, &mut F);
+                        RotateLeftThroughCarry(&mut D, &mut F);
                         println!("RL D");
                     },
                     0x13 => 
                     {
-                        RotateLeft(&mut E, &mut F);
+                        RotateLeftThroughCarry(&mut E, &mut F);
                         println!("RL E");
                     },
                     0x14 => 
                     {
-                        RotateLeft(&mut H, &mut F);
+                        RotateLeftThroughCarry(&mut H, &mut F);
                         println!("RL H");
                     },
                     0x15 => 
                     {
-                        RotateLeft(&mut L, &mut F);
+                        RotateLeftThroughCarry(&mut L, &mut F);
                         println!("RL L");
                     },
                     //0x16 => println!("RL (HL)"),
                     0x17 =>
                     {
-                        RotateLeft(&mut A, &mut F);
+                        RotateLeftThroughCarry(&mut A, &mut F);
                         println!("RL A");
                     },
                     //0x18 => println!("RR B"),
