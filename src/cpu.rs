@@ -17,7 +17,14 @@ fn PCReadByte(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16) -> u8
 
 fn ReadByte(memory: &[u8; 65536], cycles: &mut u32, readSrcAddr: u16) -> u8
 {
-    let byte = memory[readSrcAddr as usize + 0x100];
+    let mut cartOffset = 0;
+
+    if readSrcAddr > 0x100
+    {
+        cartOffset = 0x100;
+    }
+
+    let byte = memory[readSrcAddr as usize + cartOffset];
     (*cycles) += 4;
     return byte;
 }
