@@ -181,7 +181,7 @@ fn Decrement(register: &mut u8, F: &mut u8)
     // set H if no borrow from bit 4 (??)
     if *register & 0xf == 0xf
     {
-        SetH(&mut *F);
+        ResetH(&mut *F);
     }
 }
 
