@@ -93,6 +93,7 @@ fn Return(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16, SP: &mut u16)
     (*cycles) += 4;
     let loPC: u8 = memory[*SP as usize];
     *PC = ((hiPC as u16) << 4) | loPC as u16;
+    (*cycles) += 4;
     println!("load ${:04x} from ${:04x}", PC, *SP - 2);
     println!("SP moved to ${:04x}", SP);
 }
