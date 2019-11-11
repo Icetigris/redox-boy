@@ -469,6 +469,7 @@ pub fn Run(mem: &mut [u8; 65536])
             0x17 =>
             {
                 RotateLeftThroughCarry(&mut A, &mut F);
+                ResetZ(&mut F);
                 println!("RL A");
             },
             // increment value at address in HL
