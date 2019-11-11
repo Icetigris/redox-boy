@@ -150,13 +150,13 @@ fn Decrement(register: &mut u8, F: &mut u8)
 {
     *register = (*register) - 1;
     
-    *F = 0;
+    *F = *F & 0x10; // preserve C flag; mask with 0001 0000
     // would use __readeflags intrinsic here IF IT WAS SUPPORTED
     if *register == 0
     {
         SetZ(&mut *F);
     }
-    
+
     SetN(&mut *F);
 
     // set H if no borrow from bit 4 (??)
