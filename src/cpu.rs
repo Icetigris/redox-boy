@@ -891,6 +891,16 @@ pub fn Run(mem: &mut [u8; 65536])
                 println!("LD (C),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, C, destAddr);
                 println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
             },
+            0xea =>
+            {
+                // store A at address
+                let destLo: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                let destHi: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                let destAddr = Pack16(destHi, destLo);
+                WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
+                println!("LD (a16),A: store {:02x} at (${:04x})", A,  destAddr);
+                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+            },
             0xfe =>
             {
                 //CP immediate; A - imm, but toss results
