@@ -135,6 +135,11 @@ fn ResetH(F : &mut u8)
     *F &= 0xd0; // 1101 0000
 }
 
+fn SetC(F : &mut u8)
+{
+    *F |= 0x10; // 0001 0000
+}
+
 fn ResetZN(F : &mut u8)
 {
     *F &= 0x30; // 0011 0000
@@ -175,6 +180,26 @@ fn Decrement(register: &mut u8, F: &mut u8)
 
     // set H if no borrow from bit 4 (??)
     if *register & 0xf == 0xf
+    {
+        SetH(&mut *F);
+    }
+}
+
+fn Compare(A: u8, register: u8, F: &mut u8)
+{
+    *F = 0;
+    SetN(&mut *F);
+    if A == register
+    {
+        SetZ(&mut *F);
+    }
+    else if A < register
+    {
+        SetC(&mut *F);
+    }
+
+    // set H if no borrow from bit 4 (??)
+    if register & 0xf == 0xf
     {
         SetH(&mut *F);
     }
@@ -865,6 +890,13 @@ pub fn Run(mem: &mut [u8; 65536])
                 WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
                 println!("LD (C),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, C, destAddr);
                 println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+            },
+            0xfe =>
+            {
+                //CP immediate; A - imm, but toss results
+                let imm = PCReadByte(&memory, &mut cpuCycles, &mut PC);
+                Compare(A, imm, &mut F);
+                println!("CP A(${:02x}),${:02x}", A, imm);
             },
             // Prefix CB
             0xcb =>
