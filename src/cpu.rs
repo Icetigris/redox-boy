@@ -54,7 +54,7 @@ fn WriteHL(hl: u16, H: &mut u8, L: &mut u8)
 fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, regHi: u8, regLo: u8, SP: &mut u16)
 {
     //save address in registers at current stack address
-    println!("save ${:02x}{:02x} at ${:04x}", regHi, regLo, SP); 
+    //println!("save ${:02x}{:02x} at ${:04x}", regHi, regLo, SP); 
     memory[*SP as usize] = regLo;
     (*SP) -= 1;
     (*cycles) += 4;
@@ -62,14 +62,14 @@ fn PushStack(memory: &mut [u8; 65536], cycles: &mut u32, regHi: u8, regLo: u8, S
     (*SP) -= 1;
     (*cycles) += 4;
     //move stack pointer down (stack grows downwards in address space)
-    println!("SP moved to ${:04x}", SP);
+    //println!("SP moved to ${:04x}", SP);
     (*cycles) += 4;
 }
 
 fn Call(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
 {
     //save PC at current stack address
-    println!("save ${:04x} at ${:04x}", PC, SP);
+    //println!("save ${:04x} at ${:04x}", PC, SP);
     let hiAddressBits: u8 = (PC >> 4) as u8;
     let loAddressBits: u8 = (PC & 0x0f) as u8;
     memory[*SP as usize] = loAddressBits;
@@ -79,7 +79,7 @@ fn Call(memory: &mut [u8; 65536], cycles: &mut u32, PC: u16, SP: &mut u16)
     (*SP) -= 1;
     (*cycles) += 4;
     //move stack pointer down (stack grows downwards in address space)
-    println!("SP moved to ${:04x}", SP);
+    //println!("SP moved to ${:04x}", SP);
     (*cycles) += 4;
 }
 
@@ -91,7 +91,7 @@ fn PopStack(memory: &[u8; 65536], cycles: &mut u32, regHi: &mut u8, regLo: &mut 
     (*SP) += 1;
     (*cycles) += 4;
     *regLo = memory[*SP as usize];
-    println!("SP moved to ${:04x}", SP);
+    //println!("SP moved to ${:04x}", SP);
 }
 
 fn Return(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16, SP: &mut u16)
@@ -105,8 +105,8 @@ fn Return(memory: &[u8; 65536], cycles: &mut u32, PC: &mut u16, SP: &mut u16)
     let loPC: u8 = memory[*SP as usize];
     *PC = ((hiPC as u16) << 4) | loPC as u16;
     (*cycles) += 4;
-    println!("load ${:04x} from ${:04x}", PC, *SP - 2);
-    println!("SP moved to ${:04x}", SP);
+    //println!("load ${:04x} from ${:04x}", PC, *SP - 2);
+    //println!("SP moved to ${:04x}", SP);
 }
 
 fn SetZ(F: &mut u8)
@@ -305,15 +305,15 @@ pub fn Run(mem: &mut [u8; 65536])
     loop
     {
         //PC == 0 at start
-        println!("============================================================================");
+        //println!("============================================================================");
         if loops > 24590
         {
-            println!("{} cycles: {} PC: {:04X} SP: {:04X} A: {:02X} B: {:02X} C: {:02X} D: {:02X} E: {:02X} H: {:02X} L: {:02X} F: {:02X}", loops, cpuCycles, PC, SP, A, B, C, D, E, H, L, F);
-            println!("current byte at PC ({:04x}): {:02x}", PC, memory[PC as usize]);
+            //println!("{} cycles: {} PC: {:04X} SP: {:04X} A: {:02X} B: {:02X} C: {:02X} D: {:02X} E: {:02X} H: {:02X} L: {:02X} F: {:02X}", loops, cpuCycles, PC, SP, A, B, C, D, E, H, L, F);
+            //println!("current byte at PC ({:04x}): {:02x}", PC, memory[PC as usize]);
         }
-        println!("F (ZNHC): {:08b}", F);
-        println!("SP: {:04x}", SP);
-        println!("current byte at PC ({:04x}): {:02x}", PC, memory[PC as usize]);
+        //println!("F (ZNHC): {:08b}", F);
+        //println!("SP: {:04x}", SP);
+        //println!("current byte at PC ({:04x}): {:02x}", PC, memory[PC as usize]);
         loops = loops + 1;
         if loops == 28816 || loops == 29000
         {
@@ -336,20 +336,20 @@ pub fn Run(mem: &mut [u8; 65536])
                     //this number is negative, so 2s complement into an unsigned absolute value we can subtract
                     let signedOffset: u8 = (!offset + 1) & 0xff;
                     PC -= signedOffset as u16;
-                    println!("JR PC - offset {}, {}", PC, signedOffset);
-                    println!("JR ${:04x}", PC);
+                    //println!("JR PC - offset {}, {}", PC, signedOffset);
+                    //println!("JR ${:04x}", PC);
                 }
                 else
                 {
                     PC += offset as u16;
-                    println!("JR PC + offset {}", PC);
+                    //println!("JR PC + offset {}", PC);
                 }
             }
             0x20 =>
             {
                 //JR NZ - last result not zero?: PC +/- signed immediate
                 let offset: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("JR NZ offset {}", offset);
+                //println!("JR NZ offset {}", offset);
                 if F & 0x80 == 0 // jump if Z flag is 0
                 {
                     cpuCycles += 4;
@@ -358,13 +358,13 @@ pub fn Run(mem: &mut [u8; 65536])
                         //this number is negative, so 2s complement into an unsigned absolute value we can subtract
                         let signedOffset: u8 = (!offset + 1) & 0xff;
                         PC -= signedOffset as u16;
-                        println!("JR NZ PC - offset {}, {}", PC, signedOffset);
-                        println!("JR NZ ${:04x}", PC);
+                        //println!("JR NZ PC - offset {}, {}", PC, signedOffset);
+                        //println!("JR NZ ${:04x}", PC);
                     }
                     else
                     {
                         PC += offset as u16;
-                        println!("JR NZ PC + offset {}", PC);
+                        //println!("JR NZ PC + offset {}", PC);
                     }
                 }
             },
@@ -372,7 +372,7 @@ pub fn Run(mem: &mut [u8; 65536])
             {
                 //JR Z - last result zero?: PC +/- signed immediate
                 let offset: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("JR Z offset {}", offset);
+                //println!("JR Z offset {}", offset);
                 if F & 0x80 != 0 // jump if Z flag is 1
                 {
                     cpuCycles += 4;
@@ -381,13 +381,13 @@ pub fn Run(mem: &mut [u8; 65536])
                         //this number is negative, so 2s complement into an unsigned absolute value we can subtract
                         let signedOffset: u8 = (!offset + 1) & 0xff;
                         PC -= signedOffset as u16;
-                        println!("JR Z PC - offset {}, {}", PC, signedOffset);
-                        println!("JR Z ${:04x}", PC);
+                        //println!("JR Z PC - offset {}, {}", PC, signedOffset);
+                        //println!("JR Z ${:04x}", PC);
                     }
                     else
                     {
                         PC += offset as u16;
-                        println!("JR Z PC + offset {}", PC);
+                        //println!("JR Z PC + offset {}", PC);
                     }
                 }
             }
@@ -410,132 +410,132 @@ pub fn Run(mem: &mut [u8; 65536])
             0xc5 =>
             {
                 // PUSH BC
-                println!("PUSH BC (${:02x}{:02x}) at SP (${:04x}).", B, C, SP);
+                //println!("PUSH BC (${:02x}{:02x}) at SP (${:04x}).", B, C, SP);
                 PushStack(&mut memory, &mut cpuCycles, B, C, &mut SP);
             },
             0xd5 =>
             {
                 // PUSH DE
-                println!("PUSH DE (${:02x}{:02x}) at SP (${:04x}).", D, E, SP);
+                //println!("PUSH DE (${:02x}{:02x}) at SP (${:04x}).", D, E, SP);
                 PushStack(&mut memory, &mut cpuCycles, D, E, &mut SP);
             },
             0xe5 =>
             {
                 // PUSH HL
-                println!("PUSH HL (${:02x}{:02x}) at SP (${:04x}).", H, L, SP);
+                //println!("PUSH HL (${:02x}{:02x}) at SP (${:04x}).", H, L, SP);
                 PushStack(&mut memory, &mut cpuCycles, H, L, &mut SP);
             },
             0xf5 =>
             {
                 // PUSH AF
-                println!("PUSH AF (${:02x}{:02x}) at SP (${:04x}).", A, F, SP);
+                //println!("PUSH AF (${:02x}{:02x}) at SP (${:04x}).", A, F, SP);
                 PushStack(&mut memory, &mut cpuCycles, A, F, &mut SP);
             },
             0xcd =>
             {
                 let jumpDestLo = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 let jumpDestHi = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("Saving PC (${:04x}) at SP (${:04x}).", PC, SP);
+                //println!("Saving PC (${:04x}) at SP (${:04x}).", PC, SP);
                 Call(&mut memory, &mut cpuCycles, PC, &mut SP);
                 PC = Pack16(jumpDestHi, jumpDestLo);
-                println!("CALL ${:02x}{:02x}", jumpDestHi, jumpDestLo);
+                //println!("CALL ${:02x}{:02x}", jumpDestHi, jumpDestLo);
             },
             0xc1 =>
             {
                 PopStack(&memory, &mut cpuCycles, &mut B, &mut C, &mut SP);
-                println!("POP BC (${:02x}{:02x}) at SP (${:04x}).", B, C, SP);
+                //println!("POP BC (${:02x}{:02x}) at SP (${:04x}).", B, C, SP);
             },
             0xc9 =>
             {
                 Return(&memory, &mut cpuCycles, &mut PC, &mut SP);
-                println!("RET (${:04x}) at SP (${:04x}).", PC, SP);
+                //println!("RET (${:04x}) at SP (${:04x}).", PC, SP);
             },
             0xd1 =>
             {
                 PopStack(&memory, &mut cpuCycles, &mut D, &mut E, &mut SP);
-                println!("POP DE (${:02x}{:02x}) at SP (${:04x}).", D, E, SP);
+                //println!("POP DE (${:02x}{:02x}) at SP (${:04x}).", D, E, SP);
             },
             0xe1 =>
             {
                 PopStack(&memory, &mut cpuCycles, &mut H, &mut L, &mut SP);
-                println!("POP HL (${:02x}{:02x}) at SP (${:04x}).", H, L, SP);
+                //println!("POP HL (${:02x}{:02x}) at SP (${:04x}).", H, L, SP);
             },
             0xf1 =>
             {
                 PopStack(&memory, &mut cpuCycles, &mut A, &mut F, &mut SP);
-                println!("POP AF (${:02x}{:02x}) at SP (${:04x}).", A, F, SP);
+                //println!("POP AF (${:02x}{:02x}) at SP (${:04x}).", A, F, SP);
             },
             // 8-bit register increments
             0x04 => 
             {
                 Increment(&mut B, &mut F);
-                println!("INC B");
+                //println!("INC B");
             },
             0x14 => 
             {
                 Increment(&mut D, &mut F);
-                println!("INC D");
+                //println!("INC D");
             },
             0x24 => 
             {
                 Increment(&mut H, &mut F);
-                println!("INC H");
+                //println!("INC H");
             },
             0x0c => 
             {
                 Increment(&mut C, &mut F);
-                println!("INC C");
+                //println!("INC C");
             },
             0x1c => 
             {
                 Increment(&mut E, &mut F);
-                println!("INC E");
+                //println!("INC E");
             },
             0x2c => 
             {
                 Increment(&mut L, &mut F);
-                println!("INC L");
+                //println!("INC L");
             },
             0x3c => 
             {
                 Increment(&mut A, &mut F);
-                println!("INC A");
+                //println!("INC A");
             },
             // 8-bit register decrements
             0x05 => 
             {
                 Decrement(&mut B, &mut F);
-                println!("DEC B");
+                //println!("DEC B");
             },
             0x15 => 
             {
                 Decrement(&mut D, &mut F);
-                println!("DEC D");
+                //println!("DEC D");
             },
             0x25 => 
             {
                 Decrement(&mut H, &mut F);
-                println!("DEC H");
+                //println!("DEC H");
             },
             0x0d => 
             {
                 Decrement(&mut C, &mut F);
-                println!("DEC C");
+                //println!("DEC C");
             },
             0x1d => 
             {
                 Decrement(&mut E, &mut F);
-                println!("DEC E");
+                //println!("DEC E");
             },
             0x2d => 
             {
                 Decrement(&mut L, &mut F);
-                println!("DEC L");
+                //println!("DEC L");
             },
             0x3d => 
             {
                 Decrement(&mut A, &mut F);
-                println!("DEC A");
+                //println!("DEC A");
             },
             // 16-bit register increments
             //0x03 => println!("INC BC"),
@@ -544,21 +544,21 @@ pub fn Run(mem: &mut [u8; 65536])
                 let de: u16 = ((D as u16) << 8) | (E as u16);
                 Unpack8(de + 1, &mut D, &mut E);
                 cpuCycles += 4;
-                println!("INC DE");
+                //println!("INC DE");
             },
             0x23 =>
             {
                 let hl: u16 = ((H as u16) << 8) | (L as u16);
                 WriteHL(hl + 1, &mut H, &mut L);
                 cpuCycles += 4;
-                println!("INC HL, ${:02x}{:02x}", H, L);
+                //println!("INC HL, ${:02x}{:02x}", H, L);
             },
             //0x33 => println!("INC SP"),
             0x17 =>
             {
                 RotateLeftThroughCarry(&mut A, &mut F);
                 ResetZ(&mut F);
-                println!("RL A");
+                //println!("RL A");
             },
             // increment value at address in HL
             //0x34 => println!("INC (HL)"),
@@ -566,138 +566,138 @@ pub fn Run(mem: &mut [u8; 65536])
             0x06 => 
             {
                 B = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD B,n: {:02x}", B);
+                //println!("LD B,n: {:02x}", B);
             },
             0x0e => 
             {
                 C = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD C,n: {:02x}", C);
+                //println!("LD C,n: {:02x}", C);
             },
             0x16 => 
             {
                 D = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD D,n: {:02x}", D);
+                //println!("LD D,n: {:02x}", D);
             },
             0x1e => 
             {
                 E = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD E,n: {:02x}", E);
+                //println!("LD E,n: {:02x}", E);
             },
             0x26 => 
             {
                 H = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD H,n: {:02x}", H);
+                //println!("LD H,n: {:02x}", H);
             },
             0x2e => 
             {
                 L = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD L,n: {:02x}", L);
+                //println!("LD L,n: {:02x}", L);
             },
             0x3e =>
             {
                 A = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD A, {:02x}", A);
+                //println!("LD A, {:02x}", A);
             }
             // 8-bit register loads
             0x40 => 
             {
                 B = B;
-                println!("LD B,B: {:02x}", B);
+                //println!("LD B,B: {:02x}", B);
             },
             0x41 => 
             {
                 B = C;
-                println!("LD B,C: {:02x}", C);
+                //println!("LD B,C: {:02x}", C);
             },
             0x42 => 
             {
                 B = D;
-                println!("LD B,D: {:02x}", D);
+                //println!("LD B,D: {:02x}", D);
             },
             0x43 => 
             {
                 B = E;
-                println!("LD B,E: {:02x}", E);
+                //println!("LD B,E: {:02x}", E);
             },
             0x44 => 
             {
                 B = H;
-                println!("LD B,H: {:02x}", H);
+                //println!("LD B,H: {:02x}", H);
             },
             0x45 => 
             {
                 B = L;
-                println!("LD B,L: {:02x}", L);
+                //println!("LD B,L: {:02x}", L);
             },
             0x47 => 
             {
                 B = A;
-                println!("LD B,A: {:02x}", A);
+                //println!("LD B,A: {:02x}", A);
             },
             0x48 => 
             {
                 C = B;
-                println!("LD C,B: {:02x}", B);
+                //println!("LD C,B: {:02x}", B);
             },
             0x49 => 
             {
                 C = C;
-                println!("LD C,C: {:02x}", C);
+                //println!("LD C,C: {:02x}", C);
             },
             0x4a => 
             {
                 C = D;
-                println!("LD C,D: {:02x}", D);
+                //println!("LD C,D: {:02x}", D);
             },
             0x4b => 
             {
                 C = E;
-                println!("LD C,E: {:02x}", E);
+                //println!("LD C,E: {:02x}", E);
             },
             0x4c => 
             {
                 C = H;
-                println!("LD C,H: {:02x}", H);
+                //println!("LD C,H: {:02x}", H);
             },
             0x4d => 
             {
                 C = L;
-                println!("LD C,L: {:02x}", L);
+                //println!("LD C,L: {:02x}", L);
             },
             0x4f =>
             {
                 C = A;
-                println!("LD C,A: {:02x}", C);
+                //println!("LD C,A: {:02x}", C);
             },
             0x50 => 
             {
                 D = B;
-                println!("LD D,B: {:02x}", B);
+                //println!("LD D,B: {:02x}", B);
             },
             0x51 => 
             {
                 D = C;
-                println!("LD D,C: {:02x}", C);
+                //println!("LD D,C: {:02x}", C);
             },
             0x52 => 
             {
                 D = D;
-                println!("LD D,D: {:02x}", D);
+                //println!("LD D,D: {:02x}", D);
             },
             0x53 => 
             {
                 D = E;
-                println!("LD D,E: {:02x}", E);
+                //println!("LD D,E: {:02x}", E);
             },
             0x54 => 
             {
                 D = H;
-                println!("LD D,H: {:02x}", H);
+                //println!("LD D,H: {:02x}", H);
             },
             0x55 => 
             {
                 D = L;
-                println!("LD D,L: {:02x}", L);
+                //println!("LD D,L: {:02x}", L);
             },
             0x57 => 
             {
@@ -707,205 +707,205 @@ pub fn Run(mem: &mut [u8; 65536])
             0x58 => 
             {
                 E = B;
-                println!("LD E,B: {:02x}", B);
+                //println!("LD E,B: {:02x}", B);
             },
             0x59 => 
             {
                 E = C;
-                println!("LD E,C: {:02x}", C);
+                //println!("LD E,C: {:02x}", C);
             },
             0x5a => 
             {
                 E = D;
-                println!("LD E,D: {:02x}", D);
+                //println!("LD E,D: {:02x}", D);
             },
             0x5b => 
             {
                 E = E;
-                println!("LD E,E: {:02x}", E);
+                //println!("LD E,E: {:02x}", E);
             },
             0x5c => 
             {
                 E = H;
-                println!("LD E,H: {:02x}", H);
+                //println!("LD E,H: {:02x}", H);
             },
             0x5d => 
             {
                 E = L;
-                println!("LD E,L: {:02x}", L);
+                //println!("LD E,L: {:02x}", L);
             },
             0x5f => 
             {
                 E = A;
-                println!("LD E,A: {:02x}", A);
+                //println!("LD E,A: {:02x}", A);
             },
             0x60 => 
             {
                 H = B;
-                println!("LD H,B: {:02x}", B);
+                //println!("LD H,B: {:02x}", B);
             },
             0x61 => 
             {
                 H = C;
-                println!("LD H,C: {:02x}", C);
+                //println!("LD H,C: {:02x}", C);
             },
             0x62 => 
             {
                 H = D;
-                println!("LD H,D: {:02x}", D);
+                //println!("LD H,D: {:02x}", D);
             },
             0x63 => 
             {
                 H = E;
-                println!("LD H,E: {:02x}", E);
+                //println!("LD H,E: {:02x}", E);
             },
             0x64 => 
             {
                 H = H;
-                println!("LD H,H: {:02x}", H);
+                //println!("LD H,H: {:02x}", H);
             },
             0x65 => 
             {
                 H = L;
-                println!("LD H,L: {:02x}", L);
+                //println!("LD H,L: {:02x}", L);
             },
             0x67 => 
             {
                 H = A;
-                println!("LD H,A: {:02x}", A);
+                //println!("LD H,A: {:02x}", A);
             },
             0x68 => 
             {
                 L = B;
-                println!("LD L,B: {:02x}", B);
+                //println!("LD L,B: {:02x}", B);
             },
             0x69 => 
             {
                 L = C;
-                println!("LD L,C: {:02x}", C);
+                //println!("LD L,C: {:02x}", C);
             },
             0x6a => 
             {
                 L = D;
-                println!("LD L,D: {:02x}", D);
+                //println!("LD L,D: {:02x}", D);
             },
             0x6b => 
             {
                 L = E;
-                println!("LD L,E: {:02x}", E);
+                //println!("LD L,E: {:02x}", E);
             },
             0x6c => 
             {
                 L = H;
-                println!("LD L,H: {:02x}", H);
+                //println!("LD L,H: {:02x}", H);
             },
             0x6d => 
             {
                 L = L;
-                println!("LD L,L: {:02x}", L);
+                //println!("LD L,L: {:02x}", L);
             },
             0x6f => 
             {
                 L = A;
-                println!("LD L,A: {:02x}", A);
+                //println!("LD L,A: {:02x}", A);
             },
             0x78 => 
             {
                 A = B;
-                println!("LD A,B: {:02x}", B);
+                //println!("LD A,B: {:02x}", B);
             },
             0x79 => 
             {
                 A = C;
-                println!("LD A,C: {:02x}", C);
+                //println!("LD A,C: {:02x}", C);
             },
             0x7a => 
             {
                 A = D;
-                println!("LD A,D: {:02x}", D);
+                //println!("LD A,D: {:02x}", D);
             },
             0x7b => 
             {
                 A = E;
-                println!("LD A,E: {:02x}", E);
+                //println!("LD A,E: {:02x}", E);
             },
             0x7c => 
             {
                 A = H;
-                println!("LD A,H: {:02x}", H);
+                //println!("LD A,H: {:02x}", H);
             },
             0x7d => 
             {
                 A = L;
-                println!("LD A,L: {:02x}", L);
+                //println!("LD A,L: {:02x}", L);
             },
             0x7f => 
             {
                 A = A;
-                println!("LD A,A: {:02x}", A);
+                //println!("LD A,A: {:02x}", A);
             },
             // 16-bit loads
             0x01 => 
             {
                 C = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 B = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD BC, ${:02x}{:02x}", B, C);
+                //println!("LD BC, ${:02x}{:02x}", B, C);
             },
             0x11 => 
             {
                 E = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 D = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD DE, ${:02x}{:02x}", D, E);
+                //println!("LD DE, ${:02x}{:02x}", D, E);
             },
             0x21 => 
             {
                 L = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 H = PCReadByte(&memory, &mut cpuCycles, &mut PC);
-                println!("LD HL, ${:02x}{:02x}", H, L);
+                //println!("LD HL, ${:02x}{:02x}", H, L);
             },
             0x22 => 
             {
                 //memory[HL] = A
                 //HL++
                 let hl: u16 = ((H as u16) << 8) | (L as u16);
-                println!("mem at {:04x}: {:04x}", hl, memory[hl as usize]);
+                //println!("mem at {:04x}: {:04x}", hl, memory[hl as usize]);
                 WriteByte(&mut memory, &mut cpuCycles, A, hl);
-                println!("HL, ${:02x}{:02x}", H, L);
+                //println!("HL, ${:02x}{:02x}", H, L);
                 WriteHL(hl + 1, &mut H, &mut L);
-                println!("HL, ${:02x}{:02x}", H, L);
-                println!("LD (HL+), A", );
+                //println!("HL, ${:02x}{:02x}", H, L);
+                //println!("LD (HL+), A", );
             },
             0x31 => 
             {
                 SP = PCReadByte(&memory, &mut cpuCycles, &mut PC) as u16;
                 SP |= (PCReadByte(&memory, &mut cpuCycles, &mut PC) as u16) << 8;
-                println!("LD SP, ${:04x}", SP);
+                //println!("LD SP, ${:04x}", SP);
             },
             0x32 => 
             {
                 //memory[HL] = A
                 //HL--
                 let hl: u16 = ((H as u16) << 8) | (L as u16);
-                println!("mem at {:04x}: {:04x}", hl, memory[hl as usize]);
+                //println!("mem at {:04x}: {:04x}", hl, memory[hl as usize]);
                 WriteByte(&mut memory, &mut cpuCycles, A, hl);
-                println!("HL, ${:02x}{:02x}", H, L);
+                //println!("HL, ${:02x}{:02x}", H, L);
                 WriteHL(hl - 1, &mut H, &mut L);
-                println!("HL, ${:02x}{:02x}", H, L);
-                println!("LD (HL-), A", );
+                //println!("HL, ${:02x}{:02x}", H, L);
+                //println!("LD (HL-), A", );
             },
             // XORs
             0xaf =>
             {
                 let a = A;
                 Xor(&mut A, a, &mut F);
-                println!("XOR A: ${:04x}", A);
-                println!("F (ZNHC): {:08b}", F);
+                //println!("XOR A: ${:04x}", A);
+                //println!("F (ZNHC): {:08b}", F);
             },
             0xa8 =>
             {
                 Xor(&mut A, B, &mut F);
-                println!("XOR A, B: ${:04x}, ${:04x}", A, B);
-                println!("F (ZNHC): {:08b}", F);
+                //println!("XOR A, B: ${:04x}, ${:04x}", A, B);
+                //println!("F (ZNHC): {:08b}", F);
             },
             //0xa9 => println!("XOR C"),
             //0xaa => println!("XOR D"),
@@ -920,15 +920,15 @@ pub fn Run(mem: &mut [u8; 65536])
                 //A = memory[DE]
                 let de = Pack16(D, E);
                 A = ReadByte(&memory, &mut cpuCycles, de);
-                println!("LD A, (DE): load A with data at address in DE. A ({:02x}) = mem[${:02x}{:02x}]", A, D, E);
+                //println!("LD A, (DE): load A with data at address in DE. A ({:02x}) = mem[${:02x}{:02x}]", A, D, E);
             },
             0x77 =>
             {
                 // store A at address in HL
                 let destAddr = Pack16(H, L);
                 WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
-                println!("LD (HL), A: store {:02x} at (${:02x}{:02x})", A, H, L);
-                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+                //println!("LD (HL), A: store {:02x} at (${:02x}{:02x})", A, H, L);
+                //println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
             },
             0xe0 =>
             {
@@ -936,16 +936,16 @@ pub fn Run(mem: &mut [u8; 65536])
                 let immediate: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 let destAddr: u16 = 0xff00 + immediate as u16;
                 WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
-                println!("LDH (n),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, immediate, destAddr);
-                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+                //println!("LDH (n),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, immediate, destAddr);
+                //println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
             },
             0xe2 =>
             {
                 // store A at address $FF00 + C
                 let destAddr: u16 = 0xff00 + C as u16;
                 WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
-                println!("LD (C),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, C, destAddr);
-                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+                //println!("LD (C),A: store {:02x} at $FF00 + {:02x} (${:04x})", A, C, destAddr);
+                //println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
             },
             0xea =>
             {
@@ -954,8 +954,8 @@ pub fn Run(mem: &mut [u8; 65536])
                 let destHi: u8 = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 let destAddr = Pack16(destHi, destLo);
                 WriteByte(&mut memory, &mut cpuCycles, A, destAddr);
-                println!("LD (a16),A: store {:02x} at (${:04x})", A,  destAddr);
-                println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
+                //println!("LD (a16),A: store {:02x} at (${:04x})", A,  destAddr);
+                //println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
             },
             0xf0 =>
             {
@@ -971,12 +971,12 @@ pub fn Run(mem: &mut [u8; 65536])
                 //CP immediate; A - imm, but toss results
                 let imm = PCReadByte(&memory, &mut cpuCycles, &mut PC);
                 Compare(A, imm, &mut F);
-                println!("CP A(${:02x}),${:02x}", A, imm);
+                //println!("CP A(${:02x}),${:02x}", A, imm);
             },
             // Prefix CB
             0xcb =>
             {
-                println!("PREFIX CB");
+                //println!("PREFIX CB");
                 let cb = PCReadByte(&memory, &mut cpuCycles, &mut PC);
 
                 match cb
@@ -1000,38 +1000,38 @@ pub fn Run(mem: &mut [u8; 65536])
                     0x10 => 
                     {
                         RotateLeftThroughCarry(&mut B, &mut F);
-                        println!("RL B");
+                        //println!("RL B");
                     },
                     0x11 => 
                     {
                         RotateLeftThroughCarry(&mut C, &mut F);
-                        println!("RL C");
+                        //println!("RL C");
                     },
                     0x12 => 
                     {
                         RotateLeftThroughCarry(&mut D, &mut F);
-                        println!("RL D");
+                        //println!("RL D");
                     },
                     0x13 => 
                     {
                         RotateLeftThroughCarry(&mut E, &mut F);
-                        println!("RL E");
+                        //println!("RL E");
                     },
                     0x14 => 
                     {
                         RotateLeftThroughCarry(&mut H, &mut F);
-                        println!("RL H");
+                        //println!("RL H");
                     },
                     0x15 => 
                     {
                         RotateLeftThroughCarry(&mut L, &mut F);
-                        println!("RL L");
+                        //println!("RL L");
                     },
                     //0x16 => println!("RL (HL)"),
                     0x17 =>
                     {
                         RotateLeftThroughCarry(&mut A, &mut F);
-                        println!("RL A");
+                        //println!("RL A");
                     },
                     //0x18 => println!("RR B"),
                     //0x19 => println!("RR C"),
@@ -1150,8 +1150,8 @@ pub fn Run(mem: &mut [u8; 65536])
                             let fc = F & 0x20;
                             F = 0x20 | fc; //0010 0000
                         }
-                        println!("BIT 7, H: {:02x} ({:08b})", H,H);
-                        println!("F (ZNHC): {:08b}", F);
+                        //println!("BIT 7, H: {:02x} ({:08b})", H,H);
+                        //println!("F (ZNHC): {:08b}", F);
                     },
                     //0x7d => println!("BIT 7, L"),
                     //0x7e => println!("BIT 7, (HL)"),
