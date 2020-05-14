@@ -31,6 +31,10 @@ fn ReadByte(memory: &[u8; 65536], cycles: &mut u32, readSrcAddr: u16) -> u8
 
 fn WriteByte(memory: &mut [u8; 65536], cycles: &mut u32, byte: u8, writeDest: u16)
 {
+    if writeDest >= 0xff00
+    {
+        println!("write: {:04X} {:02X}", writeDest, byte);
+    }
     memory[writeDest as usize] = byte;
     (*cycles) += 4;
 }
@@ -297,15 +301,24 @@ pub fn Run(mem: &mut [u8; 65536])
     //MMU
     let mut memory = mem;
 
+    let mut loops: u32 = 0;
     loop
     {
         //PC == 0 at start
         println!("============================================================================");
-        println!("A: {:02x}, B: {:02x}, C: {:02x}, D: {:02x}, E: {:02x}, H: {:02x}, L: {:02x}", A, B, C, D, E, H, L);
+        if loops > 24590
+        {
+            println!("{} cycles: {} PC: {:04X} SP: {:04X} A: {:02X} B: {:02X} C: {:02X} D: {:02X} E: {:02X} H: {:02X} L: {:02X} F: {:02X}", loops, cpuCycles, PC, SP, A, B, C, D, E, H, L, F);
+            println!("current byte at PC ({:04x}): {:02x}", PC, memory[PC as usize]);
+        }
         println!("F (ZNHC): {:08b}", F);
         println!("SP: {:04x}", SP);
         println!("current byte at PC ({:04x}): {:02x}", PC, memory[PC as usize]);
-
+        loops = loops + 1;
+        if loops == 28816 || loops == 29000
+        {
+            println!("turgle");
+        }
         //instruction decode
         let currentByte = PCReadByte(&memory, &mut cpuCycles, &mut PC);
         match currentByte
