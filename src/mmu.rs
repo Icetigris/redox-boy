@@ -134,13 +134,31 @@
 *
 * ff30 - ff3f - Wave pattern RAM
 *
-* ff40 - LCDC
-* ff41 - STAT
-* ff42 - SCY - Scroll Y
-* ff43 - SCX - Scroll X
-* ff44 - LY - LCDC Y-coordinate
-* ff45 - LYC - LY compare
-* ff46 - DMA - DMA Transfer and start address
+* ff40 - LCDC - LCD control (Read-write) (setting this register to $91 turns on the LCD screen and shows the background)
+*    NOTE: Toggling bit 7 must be done during V-blank! You're in V-blank when the value in LY >= 144.
+*    bit 7 - LCD display on/off toggle bit
+*    bit 6 - Window tile map display selection bit
+*           0: $9800 - $9bff
+*           1: $9c00 - $9fff
+*    bit 5 - Window display on/off toggle bit
+*    bit 4 - Background and Window tile data select
+*           0: $8800 - $97ff
+*           1: $8000 - $8fff (same region as OBJ)
+*    bit 3 - Background tile map display select
+*           0: $9800 - $9bff
+*           1: $9c00 - $9fff
+*    bit 2 - OBJ (sprite) size (WxH in pixels)
+*           0: 8x8
+*           1: 8x16
+*    bit 1 - OBJ (sprite) display enable/disable toggle bit
+*    bit 0 - Background and window display toggle bit
+*
+* ff41 - STAT - LCD display status (Read-write)
+* ff42 - SCY - Scroll Y (Read-write)
+* ff43 - SCX - Scroll X (Read-write)
+* ff44 - LY - LCDC Y-coordinate (Read-only)
+* ff45 - LYC - LY compare (Read-write)
+* ff46 - DMA - DMA Transfer and start address (Write-only)
 * ff47 - BGP - Background and window palette data
 * ff48 - OBP0 - Object palette 0 data
 * ff49 - OBP1 - Object palette 1 data
