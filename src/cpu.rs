@@ -936,6 +936,15 @@ pub fn Run(mem: &mut [u8; 65536])
                 println!("LD (a16),A: store {:02x} at (${:04x})", A,  destAddr);
                 println!("mem[${:04x}]: {:02x}", destAddr, memory[destAddr as usize]);
             },
+            0xf0 =>
+            {
+                //LDH A,n
+                // A = memory[$FF00 + offset]
+                let offset = PCReadByte(&memory, &mut cpuCycles, &mut PC) as u16;
+                A = memory[(0xff00 + offset) as usize]; //should be 0x7a, but is 0 for some fucking reason (vertical scroll register isn't updating?)
+                cpuCycles += 4;
+                println!("LDH A,$ff{:02x}", offset);
+            }
             0xfe =>
             {
                 //CP immediate; A - imm, but toss results
