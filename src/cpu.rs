@@ -386,6 +386,14 @@ pub fn Run(mem: &mut [u8; 65536])
             //{ 
             //    //JR C
             //}
+            0x2f =>
+            {
+                //complement A
+                A = !A;
+                SetN(&mut F);
+                SetH(&mut F);
+                println!("CPL A");
+            }
             0xc5 =>
             {
                 // PUSH BC
