@@ -1,57 +1,39 @@
 {
     "version": "0.2.0",
     "configurations": [
-
         {
-            "name": "Bench",
-            "type": "cppvsdbg",
+            "name": "Debug (CodeLLDB)",
+            "type": "lldb",
             "request": "launch",
-            "program": "cargo",
-            "args": [
-                "bench"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${workspaceRoot}",
-            "environment": [],
-            "externalConsole": false
+            "program": "${workspaceFolder}/target/debug/redox_boy.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "preLaunchTask": "cargo build --all",
+            "env": { "RUST_BACKTRACE": "1" },
+            "presentation": {
+                "hidden": false,
+                "group": "redox_boy",
+                "order": 1
+            },
+            "terminal": "integrated"
         },
         {
-            "name": "Build",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "cargo",
-            "args": [
-                "build"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${workspaceRoot}",
-            "environment": [],
-            "externalConsole": false
-        },
-        {
-            "name": "Check",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "cargo",
-            "args": [
-                "check"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${workspaceRoot}",
-            "environment": [],
-            "externalConsole": false
-        },
-        {
-            "name": "Run (Debug)",
+            "name": "Debug (cppvsdbg)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/redox_boy.exe",
             "args": [],
+            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
-            "cwd": "${workspaceRoot}",
-            "environment": [{"name" : "RUST_BACKTRACE", "value" : "1"}],
-            "externalConsole": false,
-            "preLaunchTask": "Cargo Build"
+            "preLaunchTask": "cargo build --all",
+            "environment": [ { "name": "RUST_BACKTRACE", "value": "1" } ],
+            "presentation": {
+                "hidden": false,
+                "group": "redox_boy",
+                "order": 1
+            },
+            "console": "integratedTerminal"
         }
     ]
 }

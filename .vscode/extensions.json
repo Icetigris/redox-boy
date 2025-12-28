@@ -1,0 +1,29 @@
+{
+    // See http://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
+    // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
+    // List of extensions which should be recommended for users of this workspace.
+    "recommendations": [
+        //
+        // Required:
+        //
+        // Rust language support.
+        "rust-lang.rust-analyzer",
+        // Required for debugging rust and building C/C++ dependencies.
+        "ms-vscode.cpptools",
+        //
+        // Suggested:
+        //
+        // Alternate debugger if you need to see numbers in hex or anything other than decimal
+        "vadimcn.vscode-lldb",
+        // Cargo.toml QOL improvements
+        "BarbossHack.crates-io",
+        // Toml linting
+        "tamasfe.even-better-toml",
+        // Hex Editor
+        "ms-vscode.hexeditor",
+        // Markdown linting
+        "DavidAnson.vscode-markdownlint",
+        // Task Explorer, allows you to run tasks from a tree view
+        "axelrindle.task-explorer",
+    ]
+}

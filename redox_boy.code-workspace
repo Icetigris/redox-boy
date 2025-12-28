@@ -5,6 +5,10 @@
 		}
 	],
 	"settings": {
-		"workbench.editor.highlightModifiedTabs": true
+		"workbench.editor.highlightModifiedTabs": true,
+		"lldb.displayFormat": "hex",
+		"lldb.showDisassembly": "auto",
+		"lldb.dereferencePointers": true,
+		"lldb.consoleMode": "commands"
 	}
 }
